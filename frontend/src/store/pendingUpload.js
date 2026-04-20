@@ -1,17 +1,37 @@
 /**
- * 临时存储待上传的文件和需求
- * 用于首页点击启动引擎后立即跳转，在Process页面再进行API调用
+ * Menyimpan sementara berkas, teks benih data, dan deskripsi skenario
+ * sebelum navigasi ke halaman proses / pembangunan graf.
  */
 import { reactive } from 'vue'
 
 const state = reactive({
   files: [],
+  seedText: '',
   simulationRequirement: '',
   isPending: false
 })
 
-export function setPendingUpload(files, requirement) {
+/**
+ * Gabungkan berkas unggahan + teks benih menjadi daftar File untuk /ontology/generate.
+ * Teks non-kosong dikirim sebagai benih_teks.txt agar backend tidak perlu diubah.
+ */
+export function buildFilesForOntology(pending) {
+  const list = [...(pending.files || [])]
+  const text = (pending.seedText || '').trim()
+  if (text) {
+    list.push(new File([text], 'benih_teks.txt', { type: 'text/plain;charset=utf-8' }))
+  }
+  return list
+}
+
+/** true jika ada setidaknya satu sumber: berkas atau teks benih */
+export function hasSeedSource(pending) {
+  return (pending.files && pending.files.length > 0) || !!(pending.seedText && pending.seedText.trim())
+}
+
+export function setPendingUpload(files, requirement, seedText = '') {
   state.files = files
+  state.seedText = seedText
   state.simulationRequirement = requirement
   state.isPending = true
 }
@@ -19,6 +39,7 @@ export function setPendingUpload(files, requirement) {
 export function getPendingUpload() {
   return {
     files: state.files,
+    seedText: state.seedText,
     simulationRequirement: state.simulationRequirement,
     isPending: state.isPending
   }
@@ -26,6 +47,7 @@ export function getPendingUpload() {
 
 export function clearPendingUpload() {
   state.files = []
+  state.seedText = ''
   state.simulationRequirement = ''
   state.isPending = false
 }

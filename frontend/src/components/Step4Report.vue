@@ -8,12 +8,33 @@
           <!-- Report Header -->
           <div class="report-header-block">
             <div class="report-meta">
-              <span class="report-tag">Prediction Report</span>
+              <span class="report-tag">{{ $t('step4.reportBadge') }}</span>
               <span class="report-id">ID: {{ reportId || 'REF-2024-X92' }}</span>
             </div>
             <h1 class="main-title">{{ reportOutline.title }}</h1>
             <p class="sub-title">{{ reportOutline.summary }}</p>
             <div class="header-divider"></div>
+            <div class="marketmind-outcome-strip">
+              <h2 class="outcome-strip-title">{{ $t('step4.simulationMarketTitle') }}</h2>
+              <div class="outcome-grid">
+                <div class="outcome-card">
+                  <h3 class="outcome-card-title">{{ $t('step4.primaryRecommendation') }}</h3>
+                  <p class="outcome-card-body">{{ outcomeRecommendation }}</p>
+                </div>
+                <div class="outcome-card outcome-card--accent">
+                  <h3 class="outcome-card-title">{{ $t('step4.confidenceScore') }}</h3>
+                  <p class="outcome-card-body outcome-confidence">{{ outcomeConfidence }}</p>
+                </div>
+                <div class="outcome-card">
+                  <h3 class="outcome-card-title">{{ $t('step4.riskAnalysis') }}</h3>
+                  <p class="outcome-card-body">{{ outcomeRisk }}</p>
+                </div>
+                <div class="outcome-card outcome-card--wide">
+                  <h3 class="outcome-card-title">{{ $t('step4.additionalInsights') }}</h3>
+                  <p class="outcome-card-body">{{ outcomeInsights }}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Sections List -->
@@ -72,7 +93,7 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Waiting for Report Agent...</span>
+          <span class="waiting-text">{{ $t('step4.waitingForReportAgent') }}</span>
         </div>
       </div>
 
@@ -89,15 +110,15 @@
         <div class="workflow-overview" v-if="agentLogs.length > 0 || reportOutline">
           <div class="workflow-metrics">
             <div class="metric">
-              <span class="metric-label">Sections</span>
+              <span class="metric-label">{{ $t('step4.metricSections') }}</span>
               <span class="metric-value mono">{{ completedSections }}/{{ totalSections }}</span>
             </div>
             <div class="metric">
-              <span class="metric-label">Elapsed</span>
+              <span class="metric-label">{{ $t('step4.metricElapsed') }}</span>
               <span class="metric-value mono">{{ formatElapsedTime }}</span>
             </div>
             <div class="metric">
-              <span class="metric-label">Tools</span>
+              <span class="metric-label">{{ $t('step4.metricTools') }}</span>
               <span class="metric-value mono">{{ totalToolCalls }}</span>
             </div>
             <div class="metric metric-right">
@@ -139,7 +160,9 @@
           <div class="workflow-divider"></div>
         </div>
 
-        <div class="workflow-timeline">
+        <details class="workflow-timeline-wrap">
+          <summary class="workflow-timeline-summary">{{ $t('step4.processDetailToggle') }}</summary>
+          <div class="workflow-timeline">
           <TransitionGroup name="timeline-item">
             <div 
               v-for="(log, idx) in displayLogs" 
@@ -166,11 +189,11 @@
                   <!-- Report Start -->
                   <template v-if="log.action === 'report_start'">
                     <div class="info-row">
-                      <span class="info-key">Simulation</span>
+                      <span class="info-key">{{ $t('step4.simulationKey') }}</span>
                       <span class="info-val mono">{{ log.details?.simulation_id }}</span>
                     </div>
                     <div class="info-row" v-if="log.details?.simulation_requirement">
-                      <span class="info-key">Requirement</span>
+                      <span class="info-key">{{ $t('step4.requirementKey') }}</span>
                       <span class="info-val">{{ log.details.simulation_requirement }}</span>
                     </div>
                   </template>
@@ -182,7 +205,7 @@
                   <template v-if="log.action === 'planning_complete'">
                     <div class="status-message success">{{ log.details?.message }}</div>
                     <div class="outline-badge" v-if="log.details?.outline">
-                      {{ log.details.outline.sections?.length || 0 }} sections planned
+                      {{ log.details.outline.sections?.length || 0 }} {{ $t('step4.sectionsPlannedLabel') }}
                     </div>
                   </template>
 
@@ -307,12 +330,12 @@
                   <!-- LLM Response -->
                   <template v-if="log.action === 'llm_response'">
                     <div class="llm-meta">
-                      <span class="meta-tag">Iteration {{ log.details?.iteration }}</span>
+                      <span class="meta-tag">{{ $t('step4.iterationLabel') }} {{ log.details?.iteration }}</span>
                       <span class="meta-tag" :class="{ active: log.details?.has_tool_calls }">
-                        Tools: {{ log.details?.has_tool_calls ? 'Yes' : 'No' }}
+                        {{ $t('step4.toolsLabel') }}: {{ log.details?.has_tool_calls ? $t('step4.yes') : $t('step4.no') }}
                       </span>
                       <span class="meta-tag" :class="{ active: log.details?.has_final_answer, 'final-answer': log.details?.has_final_answer }">
-                        Final: {{ log.details?.has_final_answer ? 'Yes' : 'No' }}
+                        {{ $t('step4.finalLabel') }}: {{ log.details?.has_final_answer ? $t('step4.yes') : $t('step4.no') }}
                       </span>
                     </div>
                     <!-- 当是最终答案时，显示特殊提示 -->
@@ -320,7 +343,7 @@
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"></polyline>
                       </svg>
-                      <span>Section "{{ log.section_title }}" content generated</span>
+                      <span>{{ $t('step4.sectionGeneratedHint', { title: log.section_title }) }}</span>
                     </div>
                     <div v-if="expandedLogs.has(log.timestamp) && log.details?.response" class="llm-content">
                       <pre>{{ log.details.response }}</pre>
@@ -334,7 +357,7 @@
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                         <polyline points="22 4 12 14.01 9 11.01"></polyline>
                       </svg>
-                      <span>Report Generation Complete</span>
+                      <span>{{ $t('step4.reportGenCompleteBanner') }}</span>
                     </div>
                   </template>
                 </div>
@@ -347,17 +370,17 @@
                   <div class="footer-actions">
                     <!-- Tool Call: Show/Hide Params -->
                     <button v-if="log.action === 'tool_call' && log.details?.parameters" class="action-btn" @click.stop="toggleLogExpand(log)">
-                      {{ expandedLogs.has(log.timestamp) ? 'Hide Params' : 'Show Params' }}
+                      {{ expandedLogs.has(log.timestamp) ? $t('step4.hideParams') : $t('step4.showParams') }}
                     </button>
                     
                     <!-- Tool Result: Raw/Structured View -->
                     <button v-if="log.action === 'tool_result'" class="action-btn" @click.stop="toggleRawResult(log.timestamp, $event)">
-                      {{ showRawResult[log.timestamp] ? 'Structured View' : 'Raw Output' }}
+                      {{ showRawResult[log.timestamp] ? $t('step4.structuredView') : $t('step4.rawOutput') }}
                     </button>
                     
                     <!-- LLM Response: Show/Hide Response -->
                     <button v-if="log.action === 'llm_response' && log.details?.response" class="action-btn" @click.stop="toggleLogExpand(log)">
-                      {{ expandedLogs.has(log.timestamp) ? 'Hide Response' : 'Show Response' }}
+                      {{ expandedLogs.has(log.timestamp) ? $t('step4.hideResponse') : $t('step4.showResponse') }}
                     </button>
                   </div>
                 </div>
@@ -368,16 +391,17 @@
           <!-- Empty State -->
           <div v-if="agentLogs.length === 0 && !isComplete" class="workflow-empty">
             <div class="empty-pulse"></div>
-            <span>Waiting for agent activity...</span>
+            <span>{{ $t('step4.waitingActivity') }}</span>
           </div>
         </div>
+        </details>
       </div>
     </div>
 
     <!-- Bottom Console Logs -->
     <div class="console-logs">
       <div class="log-header">
-        <span class="log-title">CONSOLE OUTPUT</span>
+        <span class="log-title">{{ $t('step4.consoleTitle') }}</span>
         <span class="log-id">{{ reportId || 'NO_REPORT' }}</span>
       </div>
       <div class="log-content" ref="logContent">
@@ -430,6 +454,61 @@ const leftPanel = ref(null)
 const rightPanel = ref(null)
 const logContent = ref(null)
 const showRawResult = reactive({})
+
+const combinedReportMarkdown = computed(() => {
+  let s = `${reportOutline.value?.summary || ''}\n${reportOutline.value?.title || ''}`
+  const keys = Object.keys(generatedSections.value || {})
+    .map(Number)
+    .filter((n) => !Number.isNaN(n))
+    .sort((a, b) => a - b)
+  for (const k of keys) {
+    s += `\n${generatedSections.value[k] || ''}`
+  }
+  return s
+})
+
+function stripMdLite(text) {
+  if (!text) return ''
+  return text
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`+/g, ' ')
+    .replace(/[#>*_[\]()\-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+const outcomeRecommendation = computed(() => {
+  const summary = (reportOutline.value?.summary || '').trim()
+  if (summary) return summary.length > 520 ? `${summary.slice(0, 520)}…` : summary
+  const keys = Object.keys(generatedSections.value || {})
+    .map(Number)
+    .filter((n) => !Number.isNaN(n))
+    .sort((a, b) => a - b)
+  for (const k of keys) {
+    const raw = generatedSections.value[k]
+    if (raw) {
+      const plain = stripMdLite(raw)
+      if (plain) return plain.length > 520 ? `${plain.slice(0, 520)}…` : plain
+    }
+  }
+  return t('step4.outcomePlaceholder')
+})
+
+const outcomeConfidence = computed(() => {
+  const m = combinedReportMarkdown.value.match(/(\d{1,2}(?:\.\d+)?)\s*%/)
+  return m ? `${m[1]}%` : '—'
+})
+
+const outcomeRisk = computed(() => {
+  const text = combinedReportMarkdown.value
+  const m = text.match(/(risiko|risk|volatilit|likuiditas|kredit|kepatuhan|regulasi)[^\n.]{0,220}/i)
+  if (m) return m[0].trim().slice(0, 400)
+  const sentences = stripMdLite(text).split(/(?<=[.!?])\s+/).filter(Boolean)
+  if (sentences.length > 1) return sentences[sentences.length - 1].slice(0, 400)
+  return '—'
+})
+
+const outcomeInsights = computed(() => t('step4.outcomePlaceholder'))
 
 // Toggle functions
 const toggleRawResult = (timestamp, event) => {
@@ -1713,9 +1792,9 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (isComplete.value) return 'Completed'
-  if (agentLogs.value.length > 0) return 'Generating...'
-  return 'Waiting'
+  if (isComplete.value) return t('step4.statusReady')
+  if (agentLogs.value.length > 0) return t('step4.statusGenerating')
+  return t('common.pending')
 })
 
 const totalSections = computed(() => {
@@ -1781,7 +1860,7 @@ const activeStep = computed(() => {
   if (doneSteps.length > 0) return doneSteps[doneSteps.length - 1]
   
   // 否则返回第一个步骤
-  return steps[0] || { noLabel: '--', title: '等待开始', status: 'todo', meta: '' }
+  return steps[0] || { noLabel: '--', title: t('step4.wfWaitingStart'), status: 'todo', meta: '' }
 })
 
 const workflowSteps = computed(() => {
@@ -1792,9 +1871,9 @@ const workflowSteps = computed(() => {
   steps.push({
     key: 'planning',
     noLabel: 'PL',
-    title: 'Planning / Outline',
+    title: t('step4.wfPlanningTitle'),
     status: planningStatus,
-    meta: planningStatus === 'active' ? 'IN PROGRESS' : ''
+    meta: planningStatus === 'active' ? t('step4.wfInProgress') : ''
   })
 
   // Sections (if outline exists)
@@ -1810,7 +1889,7 @@ const workflowSteps = computed(() => {
       noLabel: String(idx).padStart(2, '0'),
       title: section.title,
       status,
-      meta: status === 'active' ? 'IN PROGRESS' : ''
+      meta: status === 'active' ? t('step4.wfInProgress') : ''
     })
   })
 
@@ -1819,9 +1898,9 @@ const workflowSteps = computed(() => {
   steps.push({
     key: 'complete',
     noLabel: 'OK',
-    title: 'Complete',
+    title: t('step4.wfCompleteTitle'),
     status: completeStatus,
-    meta: completeStatus === 'active' ? 'FINALIZING' : ''
+    meta: completeStatus === 'active' ? t('step4.wfFinalizing') : ''
   })
 
   return steps
@@ -1839,11 +1918,11 @@ const isSectionCompleted = (sectionIndex) => {
 const formatTime = (timestamp) => {
   if (!timestamp) return ''
   try {
-    return new Date(timestamp).toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      second: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString('id-ID', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
     })
   } catch {
     return ''
@@ -1995,19 +2074,9 @@ const getConnectorClass = (log, idx, total) => {
 }
 
 const getActionLabel = (action) => {
-  const labels = {
-    'report_start': 'Report Started',
-    'planning_start': 'Planning',
-    'planning_complete': 'Plan Complete',
-    'section_start': 'Section Start',
-    'section_content': 'Content Ready',
-    'section_complete': 'Section Done',
-    'tool_call': 'Tool Call',
-    'tool_result': 'Tool Result',
-    'llm_response': 'LLM Response',
-    'report_complete': 'Complete'
-  }
-  return labels[action] || action
+  const key = `step4.logAction.${action}`
+  const msg = t(key)
+  return msg !== key ? msg : action
 }
 
 const getLogLevelClass = (log) => {
@@ -2208,6 +2277,67 @@ watch(() => props.reportId, (newId) => {
 </script>
 
 <style scoped>
+.marketmind-outcome-strip {
+  margin: 1.25rem 0 1.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+.outcome-strip-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  color: #374151;
+}
+.outcome-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.outcome-card {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 0.75rem 0.85rem;
+}
+.outcome-card--accent {
+  border-color: #111827;
+}
+.outcome-card--wide {
+  grid-column: span 2;
+}
+.outcome-card-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+}
+.outcome-card-body {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #111827;
+}
+.outcome-confidence {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+.workflow-timeline-wrap {
+  margin-top: 0.5rem;
+}
+.workflow-timeline-summary {
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+  padding: 0.35rem 0;
+}
+.workflow-timeline-summary::-webkit-details-marker {
+  display: none;
+}
+
 .report-panel {
   height: 100%;
   display: flex;

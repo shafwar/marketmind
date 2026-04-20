@@ -51,6 +51,9 @@ class Project:
     
     # 错误信息
     error: Optional[str] = None
+
+    # Pratinjau UI: proyek dibuat dari /demo/visualization/bootstrap (tanpa LLM/Zep)
+    demo_visualization: bool = False
     
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
@@ -69,7 +72,8 @@ class Project:
             "simulation_requirement": self.simulation_requirement,
             "chunk_size": self.chunk_size,
             "chunk_overlap": self.chunk_overlap,
-            "error": self.error
+            "error": self.error,
+            "demo_visualization": self.demo_visualization,
         }
     
     @classmethod
@@ -94,7 +98,8 @@ class Project:
             simulation_requirement=data.get('simulation_requirement'),
             chunk_size=data.get('chunk_size', 500),
             chunk_overlap=data.get('chunk_overlap', 50),
-            error=data.get('error')
+            error=data.get('error'),
+            demo_visualization=data.get('demo_visualization', False),
         )
 
 

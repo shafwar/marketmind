@@ -1,0 +1,27 @@
+================================================================================
+PETUNJUK SINGKAT
+================================================================================
+1. Buka http://localhost:3000
+2. Salin blok [1] ke kolom "Ketik atau tempel sumber data"
+3. Salin blok [2] ke kolom "02 / Deskripsi skenario"
+4. Untuk HANYA melihat graf & tata letak (tanpa LLM / tanpa Zep): klik
+   "Pratinjau antarmuka graf (tanpa LLM)".
+   Untuk alur lengkap ke backend (butuh LLM, Zep, dsb.): klik "Jalankan simulasi".
+
+================================================================================
+[1] NARASI SUMBER DATA — tempel ke kolom "Ketik atau tempel sumber data"
+================================================================================
+
+Ringkasan internal (fiksi, untuk uji UI):
+
+Bank sentral baru-baru ini mengisyaratkan kemungkinan penyesuaian suku bunga acuan dalam rentang kecil (misalnya 25 basis poin) pada rapat berikutnya, dengan penekanan pada stabilitas nilai tukar dan aliran modal asing. Di pasar ritel, dana pendapatan tetap (reksadana obligasi dan sejenisnya) masih menyerap alokasi konservatif; beberapa manajer investasi melaporkan peningkatan pertanyaan nasabah tentang durasi portofolio dan sensitivitas harga unit terhadap imbal hasil.
+
+Distribusi produk dominan melalui kanal perantara (broker / agen penjual) dengan edukasi singkat berbasis selebaran digital. Sebagian emiten penerbit instrumen yang mendasari unit reksadana mengumumkan jadwal penerbitan baru tanpa mengubah rating; media keuangan menonjolkan narasi "wait-and-see" menjelang keputusan kebijakan.
+
+Data operasional teks: aliran net subscription reksadana pendapatan tetap mingguan moderat positif di kelas durasi menengah; spread obligasi pemerintah tenor 5Y vs 10Y menyempit sedikit; volatilitas imbal hasil harian tetap rendah dibanding kuartal sebelumnya. Tidak ada kejadian kredit besar yang dilaporkan pada sampel entitas berikut: Bank Indonesia (otoritas), dua profil investor ritel anonim, produk RDPT contoh, broker distribusi, satu emiten, serta kanal media pasar.
+
+================================================================================
+[2] DESKRIPSI SKENARIO — tempel ke kolom "02 / Deskripsi skenario"
+================================================================================
+
+Jika Bank Indonesia menaikkan suku bunga acuan sebesar 25 bps pada rapat berikutnya, bagaimana perkiraan perilaku investor ritel terhadap reksadana pendapatan tetap (alokasi tambahan, pencairan parsial, atau menunggu) dalam horizon 30 hari ke depan? Fokuskan pada respons aliran dana ritel, peran narasi media, dan saluran broker; abaikan prediksi harga saham individu.

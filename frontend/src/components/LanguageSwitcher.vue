@@ -66,11 +66,10 @@ onUnmounted(() => {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Light theme (default - for white header backgrounds) */
 .switcher-trigger {
-  background: transparent;
-  color: #333;
-  border: 1px solid #CCC;
+  background: var(--mm-bg-elevated);
+  color: var(--mm-nav-text);
+  border: 1px solid var(--mm-border);
   padding: 4px 12px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
@@ -82,7 +81,7 @@ onUnmounted(() => {
 }
 
 .switcher-trigger:hover {
-  border-color: #999;
+  border-color: var(--mm-border-strong);
 }
 
 .caret {
@@ -94,30 +93,30 @@ onUnmounted(() => {
   top: 100%;
   right: 0;
   margin-top: 4px;
-  background: #FFFFFF;
-  border: 1px solid #DDD;
+  background: var(--mm-bg-elevated);
+  border: 1px solid var(--mm-border);
   list-style: none;
   padding: 4px 0;
   min-width: 100%;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .switcher-option {
   padding: 6px 12px;
   font-size: 0.8rem;
-  color: #333;
+  color: var(--mm-text-primary);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
 }
 
 .switcher-option:hover {
-  background: #F0F0F0;
+  background: var(--mm-bg-muted);
 }
 
 .switcher-option.active {
-  color: var(--orange, #FF4500);
+  color: var(--mm-accent);
 }
 
 

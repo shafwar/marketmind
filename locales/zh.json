@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "name": "MARKETMIND",
+    "short": "MarketMind"
+  },
   "common": {
     "confirm": "确认",
     "cancel": "取消",
@@ -62,20 +66,37 @@
     "step05Desc": "与模拟世界中的任意一位进行对话 & 与ReportAgent进行对话",
     "realitySeed": "01 / 现实种子",
     "supportedFormats": "支持格式: PDF, MD, TXT",
-    "dragToUpload": "拖拽文件上传",
+    "seedHeading": "输入或粘贴种子数据",
+    "seedTextPlaceholder": "可粘贴叙述、报告摘录、原始市场背景等。仅填写此处即可开始；也可在下方附加 .txt / PDF / MD。",
+    "seedDivider": "— 或附加文件 —",
+    "dragToUpload": "拖拽文件到上传区（若上方文本已足够可省略）",
     "orBrowse": "或点击浏览文件系统",
     "inputParams": "输入参数",
     "simulationPrompt": ">_ 02 / 模拟提示词",
     "promptPlaceholder": "// 用自然语言输入模拟或预测需求（例.武大若发布撤销肖某处分的公告，会引发什么舆情走向）",
     "engineBadge": "引擎: MiroFish-V1.0",
     "startEngine": "启动引擎",
-    "initializing": "初始化中..."
+    "initializing": "初始化中...",
+    "demoVizBtn": "仅预览图谱界面（无 LLM）",
+    "demoVizHint": "创建含静态节点与边的示例项目，不调用 Zep 与模型。",
+    "demoVizLoading": "正在创建演示项目…"
   },
   "main": {
     "layoutGraph": "图谱",
     "layoutSplit": "双栏",
     "layoutWorkbench": "工作台",
-    "stepNames": ["图谱构建", "环境搭建", "开始模拟", "报告生成", "深度互动"]
+    "stepPrefix": "步骤",
+    "statusError": "错误",
+    "statusReady": "就绪",
+    "statusBuildingGraph": "构建图谱中",
+    "statusOntology": "生成本体中",
+    "statusInit": "初始化中",
+    "statusPreparing": "准备中",
+    "statusSimRunning": "模拟运行中",
+    "statusReportGen": "生成报告中",
+    "statusProcessing": "处理中",
+    "stepNames": ["图谱构建", "环境搭建", "开始模拟", "报告生成", "深度互动"],
+    "demoVizBanner": "演示可视化：仅为本地静态图数据（无 LLM / 无 Zep）。"
   },
   "step1": {
     "ontologyGeneration": "本体生成",
@@ -95,7 +116,9 @@
     "creating": "创建中...",
     "enterEnvSetup": "进入环境搭建",
     "createSimulationFailed": "创建模拟失败: {error}",
-    "createSimulationException": "创建模拟异常: {error}"
+    "createSimulationException": "创建模拟异常: {error}",
+    "systemDashboard": "系统面板",
+    "systemIdLabel": "项目 ID"
   },
   "step2": {
     "simInstanceInit": "模拟实例初始化",
@@ -205,7 +228,14 @@
     "forceStopSuccess": "模拟已强制停止",
     "forceStopFailed": "强制停止失败: {error}",
     "startGenerateReportBtn": "开始生成结果报告",
-    "generatingReportBtn": "启动中..."
+    "generatingReportBtn": "启动中...",
+    "platformFeed": "信息流广场",
+    "platformCommunity": "话题社区",
+    "tooltipActionsTitle": "可用动作",
+    "timelineTotalEvents": "事件总数",
+    "roundLabel": "轮次",
+    "timeLabel": "时间",
+    "actsLabel": "动作"
   },
   "step4": {
     "generatingSection": "正在生成{title}...",
@@ -282,7 +312,9 @@
     "errorOccurred": "抱歉，发生了错误: {error}",
     "noResponse": "无响应",
     "requestFailed": "请求失败",
-    "selectAgentFirst": "请先选择一个模拟个体"
+    "selectAgentFirst": "请先选择一个模拟个体",
+    "historyUser": "用户",
+    "historyAssistant": "助手"
   },
   "graph": {
     "panelTitle": "Graph Relationship Visualization",
@@ -340,6 +372,8 @@
     "graphDeleted": "图谱已删除: {id}",
     "entityNotFound": "实体不存在: {id}",
     "graphNotBuilt": "项目尚未构建图谱，请先调用 /api/graph/build",
+    "demoBuildBlocked": "此为预览演示项目，不会在 Zep 中重建图谱。请通过正常流程创建新项目。",
+    "demoGraphNoRemoteDelete": "本地演示图谱 — 无远程删除对象。",
     "requireSimulationId": "请提供 simulation_id",
     "simulationNotFound": "模拟不存在: {id}",
     "projectMissingRequirement": "项目缺少模拟需求描述 (simulation_requirement)",

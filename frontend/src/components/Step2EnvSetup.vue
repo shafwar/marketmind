@@ -1088,7 +1088,8 @@ onUnmounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #FAFAFA;
+  background: var(--mm-bg-surface);
+  color: var(--mm-text-primary);
   font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
@@ -1103,18 +1104,18 @@ onUnmounted(() => {
 
 /* Step Card */
 .step-card {
-  background: #FFF;
+  background: var(--mm-bg-elevated);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  border: 1px solid #EAEAEA;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--mm-border);
   transition: all 0.3s ease;
   position: relative;
 }
 
 .step-card.active {
-  border-color: #FF5722;
-  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.08);
+  border-color: var(--mm-accent);
+  box-shadow: 0 4px 20px var(--mm-accent-soft);
 }
 
 .card-header {
@@ -1134,12 +1135,12 @@ onUnmounted(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 20px;
   font-weight: 700;
-  color: #E0E0E0;
+  color: var(--mm-text-muted);
 }
 
 .step-card.active .step-num,
 .step-card.completed .step-num {
-  color: #000;
+  color: var(--mm-text-primary);
 }
 
 .step-title {
@@ -1156,10 +1157,10 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
-.badge.success { background: #E8F5E9; color: #2E7D32; }
-.badge.processing { background: #FF5722; color: #FFF; }
-.badge.pending { background: #F5F5F5; color: #999; }
-.badge.accent { background: #E3F2FD; color: #1565C0; }
+.badge.success { background: var(--mm-success-bg); color: var(--mm-success); }
+.badge.processing { background: var(--mm-accent); color: #0a0a0c; }
+.badge.pending { background: var(--mm-bg-muted); color: var(--mm-text-muted); }
+.badge.accent { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
 
 .card-content {
   /* No extra padding - uses step-card's padding */
@@ -1168,13 +1169,13 @@ onUnmounted(() => {
 .api-note {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  color: #999;
+  color: var(--mm-text-muted);
   margin-bottom: 8px;
 }
 
 .description {
   font-size: 12px;
-  color: #666;
+  color: var(--mm-text-secondary);
   line-height: 1.5;
   margin-bottom: 16px;
 }

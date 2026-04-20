@@ -2,7 +2,7 @@
   <div class="process-page">
     <!-- 顶部导航栏 -->
     <nav class="navbar">
-      <div class="nav-brand" @click="goHome">MIROFISH</div>
+      <div class="nav-brand" @click="goHome">{{ $t('brand.name') }}</div>
       
       <!-- 中间步骤指示器 -->
       <div class="nav-center">
@@ -415,7 +415,7 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { generateOntology, getProject, buildGraph, getTaskStatus, getGraphData } from '../api/graph'
-import { getPendingUpload, clearPendingUpload } from '../store/pendingUpload'
+import { getPendingUpload, clearPendingUpload, buildFilesForOntology, hasSeedSource } from '../store/pendingUpload'
 import * as d3 from 'd3'
 
 const route = useRoute()
@@ -568,8 +568,8 @@ const initProject = async () => {
 const handleNewProject = async () => {
   const pending = getPendingUpload()
   
-  if (!pending.isPending || pending.files.length === 0) {
-    error.value = '没有待上传的文件，请返回首页重新操作'
+  if (!pending.isPending || !hasSeedSource(pending)) {
+    error.value = '没有待上传的数据（文件或输入的文本），请返回首页重新操作'
     loading.value = false
     return
   }
@@ -581,7 +581,7 @@ const handleNewProject = async () => {
     
     // 构建 FormData
     const formDataObj = new FormData()
-    pending.files.forEach(file => {
+    buildFilesForOntology(pending).forEach(file => {
       formDataObj.append('files', file)
     })
     formDataObj.append('simulation_requirement', pending.simulationRequirement)

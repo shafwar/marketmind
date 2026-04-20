@@ -1,4 +1,8 @@
 {
+  "id": {
+    "label": "Bahasa Indonesia",
+    "llmInstruction": "Jawab selalu dalam Bahasa Indonesia yang formal dan jelas."
+  },
   "zh": {
     "label": "中文",
     "llmInstruction": "请使用中文回答。"

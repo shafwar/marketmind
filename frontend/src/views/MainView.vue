@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="app-header">
       <div class="header-left">
-        <div class="brand" @click="router.push('/')">MIROFISH</div>
+        <div class="brand" @click="router.push('/')">{{ $t('brand.name') }}</div>
       </div>
       
       <div class="header-center">
@@ -24,7 +24,7 @@
         <LanguageSwitcher />
         <div class="step-divider"></div>
         <div class="workflow-step">
-          <span class="step-num">Step {{ currentStep }}/5</span>
+          <span class="step-num">{{ $t('main.stepPrefix') }} {{ currentStep }}/5</span>
           <span class="step-name">{{ $tm('main.stepNames')[currentStep - 1] }}</span>
         </div>
         <div class="step-divider"></div>
@@ -34,6 +34,10 @@
         </span>
       </div>
     </header>
+
+    <div v-if="projectData?.demo_visualization" class="demo-viz-banner">
+      {{ $t('main.demoVizBanner') }}
+    </div>
 
     <!-- Main Content Area -->
     <main class="content-area">
@@ -58,7 +62,6 @@
           :ontologyProgress="ontologyProgress"
           :buildProgress="buildProgress"
           :graphData="graphData"
-          :systemLogs="systemLogs"
           @next-step="handleNextStep"
         />
         <!-- Step 2: 环境搭建 -->
@@ -84,7 +87,7 @@ import GraphPanel from '../components/GraphPanel.vue'
 import Step1GraphBuild from '../components/Step1GraphBuild.vue'
 import Step2EnvSetup from '../components/Step2EnvSetup.vue'
 import { generateOntology, getProject, buildGraph, getTaskStatus, getGraphData } from '../api/graph'
-import { getPendingUpload, clearPendingUpload } from '../store/pendingUpload'
+import { getPendingUpload, clearPendingUpload, buildFilesForOntology, hasSeedSource } from '../store/pendingUpload'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
 const route = useRoute()
@@ -135,11 +138,11 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  if (error.value) return 'Error'
-  if (currentPhase.value >= 2) return 'Ready'
-  if (currentPhase.value === 1) return 'Building Graph'
-  if (currentPhase.value === 0) return 'Generating Ontology'
-  return 'Initializing'
+  if (error.value) return t('main.statusError')
+  if (currentPhase.value >= 2) return t('main.statusReady')
+  if (currentPhase.value === 1) return t('main.statusBuildingGraph')
+  if (currentPhase.value === 0) return t('main.statusOntology')
+  return t('main.statusInit')
 })
 
 // --- Helpers ---
@@ -193,9 +196,9 @@ const initProject = async () => {
 
 const handleNewProject = async () => {
   const pending = getPendingUpload()
-  if (!pending.isPending || pending.files.length === 0) {
-    error.value = 'No pending files found.'
-    addLog('Error: No pending files found for new project.')
+  if (!pending.isPending || !hasSeedSource(pending)) {
+    error.value = 'No pending data source (files or typed text).'
+    addLog('Error: No pending files or seed text for new project.')
     return
   }
   
@@ -206,7 +209,7 @@ const handleNewProject = async () => {
     addLog('Starting ontology generation: Uploading files...')
     
     const formData = new FormData()
-    pending.files.forEach(f => formData.append('files', f))
+    buildFilesForOntology(pending).forEach(f => formData.append('files', f))
     formData.append('simulation_requirement', pending.simulationRequirement)
     
     const res = await generateOntology(formData)
@@ -414,20 +417,21 @@ onUnmounted(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #FFF;
+  background: var(--mm-page-bg);
   overflow: hidden;
   font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  color: var(--mm-text-primary);
 }
 
 /* Header */
 .app-header {
   height: 60px;
-  border-bottom: 1px solid #EAEAEA;
+  border-bottom: 1px solid var(--mm-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background: #FFF;
+  background: var(--mm-nav-bg);
   z-index: 100;
   position: relative;
 }
@@ -444,11 +448,12 @@ onUnmounted(() => {
   font-size: 18px;
   letter-spacing: 1px;
   cursor: pointer;
+  color: var(--mm-nav-text);
 }
 
 .view-switcher {
   display: flex;
-  background: #F5F5F5;
+  background: var(--mm-bg-muted);
   padding: 4px;
   border-radius: 6px;
   gap: 4px;
@@ -460,16 +465,16 @@ onUnmounted(() => {
   padding: 6px 16px;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: var(--mm-text-secondary);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .switch-btn.active {
-  background: #FFF;
-  color: #000;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background: var(--mm-bg-elevated);
+  color: var(--mm-text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .status-indicator {
@@ -477,7 +482,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #666;
+  color: var(--mm-text-secondary);
   font-weight: 500;
 }
 
@@ -497,25 +502,25 @@ onUnmounted(() => {
 .step-num {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  color: #999;
+  color: var(--mm-text-muted);
 }
 
 .step-name {
   font-weight: 700;
-  color: #000;
+  color: var(--mm-nav-text);
 }
 
 .step-divider {
   width: 1px;
   height: 14px;
-  background-color: #E0E0E0;
+  background-color: var(--mm-border-strong);
 }
 
 .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #CCC;
+  background: var(--mm-text-muted);
 }
 
 .status-indicator.processing .dot { background: #FF5722; animation: pulse 1s infinite; }
@@ -523,6 +528,17 @@ onUnmounted(() => {
 .status-indicator.error .dot { background: #F44336; }
 
 @keyframes pulse { 50% { opacity: 0.5; } }
+
+.demo-viz-banner {
+  flex-shrink: 0;
+  padding: 8px 24px;
+  font-size: 0.82rem;
+  text-align: center;
+  background: var(--mm-warning-bg);
+  border-bottom: 1px solid var(--mm-warning-border);
+  color: var(--mm-warning-text);
+  font-family: 'JetBrains Mono', monospace;
+}
 
 /* Content */
 .content-area {
@@ -540,6 +556,6 @@ onUnmounted(() => {
 }
 
 .panel-wrapper.left {
-  border-right: 1px solid #EAEAEA;
+  border-right: 1px solid var(--mm-border);
 }
 </style>

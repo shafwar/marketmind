@@ -1,4 +1,8 @@
 {
+  "brand": {
+    "name": "MARKETMIND",
+    "short": "MarketMind"
+  },
   "common": {
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -62,20 +66,37 @@
     "step05Desc": "Chat with any simulated individual & converse with ReportAgent",
     "realitySeed": "01 / Reality Seed",
     "supportedFormats": "Formats: PDF, MD, TXT",
-    "dragToUpload": "Drag files to upload",
+    "seedHeading": "Type or paste seed data",
+    "seedTextPlaceholder": "Paste narrative, report excerpts, raw market context, etc. This field alone is enough to start — or attach .txt / PDF / MD below.",
+    "seedDivider": "— or attach files —",
+    "dragToUpload": "Drag files here (optional if text above is enough)",
     "orBrowse": "or click to browse files",
     "inputParams": "Input Parameters",
     "simulationPrompt": ">_ 02 / Simulation Prompt",
     "promptPlaceholder": "// Describe your simulation or prediction requirement in natural language",
     "engineBadge": "Engine: MiroFish-V1.0",
     "startEngine": "Start Engine",
-    "initializing": "Initializing..."
+    "initializing": "Initializing...",
+    "demoVizBtn": "Preview graph UI (no LLM)",
+    "demoVizHint": "Creates a sample project with static nodes and edges — no Zep, no model calls.",
+    "demoVizLoading": "Creating demo…"
   },
   "main": {
     "layoutGraph": "Graph",
     "layoutSplit": "Split",
     "layoutWorkbench": "Workbench",
-    "stepNames": ["Graph Build", "Env Setup", "Run Simulation", "Report Generation", "Deep Interaction"]
+    "stepPrefix": "Step",
+    "statusError": "Error",
+    "statusReady": "Ready",
+    "statusBuildingGraph": "Building graph",
+    "statusOntology": "Generating ontology",
+    "statusInit": "Initializing",
+    "statusPreparing": "Preparing",
+    "statusSimRunning": "Simulation running",
+    "statusReportGen": "Generating report",
+    "statusProcessing": "Processing",
+    "stepNames": ["Graph Build", "Env Setup", "Run Simulation", "Report Generation", "Deep Interaction"],
+    "demoVizBanner": "Demo visualization: static graph data only (no LLM / no Zep)."
   },
   "step1": {
     "ontologyGeneration": "Ontology Generation",
@@ -95,7 +116,9 @@
     "creating": "Creating...",
     "enterEnvSetup": "Enter Environment Setup",
     "createSimulationFailed": "Failed to create simulation: {error}",
-    "createSimulationException": "Simulation creation error: {error}"
+    "createSimulationException": "Simulation creation error: {error}",
+    "systemDashboard": "System dashboard",
+    "systemIdLabel": "Project ID"
   },
   "step2": {
     "simInstanceInit": "Simulation Instance Initialization",
@@ -205,7 +228,14 @@
     "forceStopSuccess": "Simulation force stopped",
     "forceStopFailed": "Force stop failed: {error}",
     "startGenerateReportBtn": "Generate Report",
-    "generatingReportBtn": "Starting..."
+    "generatingReportBtn": "Starting...",
+    "platformFeed": "Information plaza",
+    "platformCommunity": "Topic community",
+    "tooltipActionsTitle": "Available actions",
+    "timelineTotalEvents": "Total events",
+    "roundLabel": "Round",
+    "timeLabel": "Time",
+    "actsLabel": "Actions"
   },
   "step4": {
     "generatingSection": "Generating {title}...",
@@ -247,7 +277,56 @@
     "panelRelatedEdges": "Related Edges",
     "panelRelatedNodes": "Related Nodes",
     "world1": "World 1",
-    "world2": "World 2"
+    "world2": "World 2",
+    "reportBadge": "Market simulation outcome",
+    "metricSections": "Sections",
+    "metricElapsed": "Elapsed",
+    "metricTools": "Tools",
+    "statusGenerating": "Generating…",
+    "statusReady": "Ready",
+    "simulationKey": "Simulation",
+    "requirementKey": "Scenario",
+    "sectionsPlannedLabel": "sections planned",
+    "outcomeTitle": "Decision summary",
+    "primaryRecommendation": "Primary recommendation",
+    "confidenceScore": "Confidence (%)",
+    "riskAnalysis": "Risk analysis",
+    "additionalInsights": "Additional insights",
+    "outcomePlaceholder": "Details will refine as each report section completes.",
+    "processDetailToggle": "Process detail (optional)",
+    "simulationMarketTitle": "Market simulation result",
+    "consoleTitle": "Console log (technical)",
+    "hideParams": "Hide params",
+    "showParams": "Show params",
+    "structuredView": "Structured view",
+    "rawOutput": "Raw output",
+    "hideResponse": "Hide response",
+    "showResponse": "Show response",
+    "reportGenCompleteBanner": "Report generation complete",
+    "waitingActivity": "Waiting for agent activity...",
+    "iterationLabel": "Iteration",
+    "toolsLabel": "Tools",
+    "finalLabel": "Final",
+    "sectionGeneratedHint": "Section \"{title}\" content generated",
+    "yes": "Yes",
+    "no": "No",
+    "wfPlanningTitle": "Planning / Outline",
+    "wfCompleteTitle": "Complete",
+    "wfInProgress": "IN PROGRESS",
+    "wfFinalizing": "FINALIZING",
+    "wfWaitingStart": "Waiting to start",
+    "logAction": {
+      "report_start": "Report started",
+      "planning_start": "Planning",
+      "planning_complete": "Plan complete",
+      "section_start": "Section start",
+      "section_content": "Content ready",
+      "section_complete": "Section done",
+      "tool_call": "Tool call",
+      "tool_result": "Tool result",
+      "llm_response": "LLM response",
+      "report_complete": "Complete"
+    }
   },
   "step5": {
     "interactiveTools": "Interactive Tools",
@@ -257,7 +336,7 @@
     "selectChatTarget": "Select chat target",
     "sendSurvey": "Send survey to the world",
     "reportAgentChat": "Report Agent - Chat",
-    "reportAgentDesc": "A conversational version of the report generation agent with access to 4 professional tools and MiroFish's complete memory",
+    "reportAgentDesc": "A conversational version of the report generation agent with access to 4 professional tools and MarketMind's complete memory",
     "toolInsightForge": "InsightForge Deep Attribution",
     "toolInsightForgeDesc": "Aligns real-world seed data with simulation state, combining Global/Local Memory for cross-temporal deep attribution analysis",
     "toolPanoramaSearch": "PanoramaSearch Full Tracking",
@@ -282,7 +361,9 @@
     "errorOccurred": "Sorry, an error occurred: {error}",
     "noResponse": "No response",
     "requestFailed": "Request failed",
-    "selectAgentFirst": "Please select a simulated individual first"
+    "selectAgentFirst": "Please select a simulated individual first",
+    "historyUser": "User",
+    "historyAssistant": "Assistant"
   },
   "graph": {
     "panelTitle": "Graph Relationship Visualization",
@@ -340,6 +421,8 @@
     "graphDeleted": "Graph deleted: {id}",
     "entityNotFound": "Entity not found: {id}",
     "graphNotBuilt": "Graph not yet built. Please call /api/graph/build first.",
+    "demoBuildBlocked": "This preview project does not rebuild the graph in Zep. Create a new project via the normal flow.",
+    "demoGraphNoRemoteDelete": "Local demo graph — nothing to delete remotely.",
     "requireSimulationId": "Please provide simulation_id",
     "simulationNotFound": "Simulation not found: {id}",
     "projectMissingRequirement": "Project missing simulation requirement (simulation_requirement)",

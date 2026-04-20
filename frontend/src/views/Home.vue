@@ -2,10 +2,10 @@
   <div class="home-container">
     <!-- 顶部导航栏 -->
     <nav class="navbar">
-      <div class="nav-brand">MIROFISH</div>
+      <div class="nav-brand">{{ $t('brand.name') }}</div>
       <div class="nav-links">
         <LanguageSwitcher />
-        <a href="https://github.com/666ghj/MiroFish" target="_blank" class="github-link">
+        <a href="https://github.com/shafwar/marketmind" target="_blank" class="github-link">
           {{ $t('nav.visitGithub') }} <span class="arrow">↗</span>
         </a>
       </div>
@@ -44,7 +44,7 @@
         <div class="hero-right">
           <!-- Logo 区域 -->
           <div class="logo-container">
-            <img src="../assets/logo/MiroFish_logo_left.jpeg" alt="MiroFish Logo" class="hero-logo" />
+            <img src="../assets/logo/MiroFish_logo_left.jpeg" alt="MarketMind" class="hero-logo" />
           </div>
           
           <button class="scroll-down-btn" @click="scrollToBottom">
@@ -132,6 +132,18 @@
                 <span class="console-label">{{ $t('home.realitySeed') }}</span>
                 <span class="console-meta">{{ $t('home.supportedFormats') }}</span>
               </div>
+
+              <div class="seed-block">
+                <div class="seed-label">{{ $t('home.seedHeading') }}</div>
+                <textarea
+                  v-model="seedText"
+                  class="seed-textarea"
+                  :placeholder="$t('home.seedTextPlaceholder')"
+                  rows="5"
+                  :disabled="loading"
+                />
+                <div class="seed-divider">{{ $t('home.seedDivider') }}</div>
+              </div>
               
               <div 
                 class="upload-zone"
@@ -194,12 +206,24 @@
               <button 
                 class="start-engine-btn"
                 @click="startSimulation"
-                :disabled="!canSubmit || loading"
+                :disabled="!canSubmit || loading || demoVizLoading"
               >
                 <span v-if="!loading">{{ $t('home.startEngine') }}</span>
                 <span v-else>{{ $t('home.initializing') }}</span>
                 <span class="btn-arrow">→</span>
               </button>
+              <p class="demo-viz-hint">{{ $t('home.demoVizHint') }}</p>
+              <button
+                type="button"
+                class="demo-viz-btn"
+                @click="startDemoVisualization"
+                :disabled="loading || demoVizLoading"
+              >
+                <span v-if="!demoVizLoading">{{ $t('home.demoVizBtn') }}</span>
+                <span v-else>{{ $t('home.demoVizLoading') }}</span>
+                <span class="btn-arrow">↗</span>
+              </button>
+              <p v-if="error" class="home-inline-error" role="alert">{{ error }}</p>
             </div>
           </div>
         </div>
@@ -216,6 +240,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import HistoryDatabase from '../components/HistoryDatabase.vue'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import { bootstrapDemoVisualization } from '../api/graph'
 
 const router = useRouter()
 
@@ -226,9 +251,12 @@ const formData = ref({
 
 // 文件列表
 const files = ref([])
+// Sumber data teks (opsional; digabung ke benih_teks.txt saat kirim)
+const seedText = ref('')
 
 // 状态
 const loading = ref(false)
+const demoVizLoading = ref(false)
 const error = ref('')
 const isDragOver = ref(false)
 
@@ -237,7 +265,8 @@ const fileInput = ref(null)
 
 // 计算属性:是否可以提交
 const canSubmit = computed(() => {
-  return formData.value.simulationRequirement.trim() !== '' && files.value.length > 0
+  const hasSource = files.value.length > 0 || seedText.value.trim() !== ''
+  return formData.value.simulationRequirement.trim() !== '' && hasSource
 })
 
 // 触发文件选择
@@ -300,7 +329,7 @@ const startSimulation = () => {
   
   // 存储待上传的数据
   import('../store/pendingUpload.js').then(({ setPendingUpload }) => {
-    setPendingUpload(files.value, formData.value.simulationRequirement)
+    setPendingUpload(files.value, formData.value.simulationRequirement, seedText.value)
     
     // 立即跳转到Process页面（使用特殊标识表示新建项目）
     router.push({
@@ -309,42 +338,57 @@ const startSimulation = () => {
     })
   })
 }
+
+/** Pratinjau graf + workbench tanpa LLM/Zep */
+const startDemoVisualization = async () => {
+  if (demoVizLoading.value || loading.value) return
+  demoVizLoading.value = true
+  error.value = ''
+  try {
+    const scenario =
+      formData.value.simulationRequirement.trim() ||
+      '(demo) Pratinjau visualisasi — tanpa LLM'
+    const res = await bootstrapDemoVisualization({
+      simulation_requirement: scenario,
+      name: 'Demo visualisasi (tanpa LLM)'
+    })
+    if (res.success && res.data?.project_id) {
+      router.push({
+        name: 'Process',
+        params: { projectId: res.data.project_id }
+      })
+    }
+  } catch (e) {
+    error.value = e?.message || String(e)
+    console.error(e)
+  } finally {
+    demoVizLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
-/* 全局变量与重置 */
-:root {
-  --black: #000000;
-  --white: #FFFFFF;
-  --orange: #FF4500;
-  --gray-light: #F5F5F5;
-  --gray-text: #666666;
-  --border: #E5E5E5;
-  /* 
-    使用 Space Grotesk 作为主要标题字体，JetBrains Mono 作为代码/标签字体
-    确保已在 index.html 引入这些 Google Fonts 
-  */
+.home-container {
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   --font-cn: 'Noto Sans SC', system-ui, sans-serif;
-}
-
-.home-container {
+  --orange: var(--mm-accent);
   min-height: 100vh;
-  background: var(--white);
+  background: var(--mm-page-bg);
   font-family: var(--font-sans);
-  color: var(--black);
+  color: var(--mm-text-primary);
 }
 
 /* 顶部导航 */
 .navbar {
   height: 60px;
-  background: var(--black);
-  color: var(--white);
+  background: var(--mm-nav-bg);
+  color: var(--mm-nav-text);
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 40px;
+  border-bottom: 1px solid var(--mm-border);
 }
 
 .nav-brand {
@@ -352,6 +396,7 @@ const startSimulation = () => {
   font-weight: 800;
   letter-spacing: 1px;
   font-size: 1.2rem;
+  color: var(--mm-nav-text);
 }
 
 .nav-links {
@@ -361,7 +406,7 @@ const startSimulation = () => {
 }
 
 .github-link {
-  color: var(--white);
+  color: var(--mm-nav-text);
   text-decoration: none;
   font-family: var(--font-mono);
   font-size: 0.9rem;
@@ -410,8 +455,8 @@ const startSimulation = () => {
 }
 
 .orange-tag {
-  background: var(--orange);
-  color: var(--white);
+  background: var(--mm-accent);
+  color: #0a0a0c;
   padding: 4px 10px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -419,7 +464,7 @@ const startSimulation = () => {
 }
 
 .version-text {
-  color: #999;
+  color: var(--mm-text-muted);
   font-weight: 500;
   letter-spacing: 0.5px;
 }
@@ -430,11 +475,11 @@ const startSimulation = () => {
   font-weight: 500;
   margin: 0 0 40px 0;
   letter-spacing: -2px;
-  color: var(--black);
+  color: var(--mm-text-primary);
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #000000 0%, #444444 100%);
+  background: linear-gradient(90deg, #fafafa 0%, #71717a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -443,7 +488,7 @@ const startSimulation = () => {
 .hero-desc {
   font-size: 1.05rem;
   line-height: 1.8;
-  color: var(--gray-text);
+  color: var(--mm-text-secondary);
   max-width: 640px;
   margin-bottom: 50px;
   font-weight: 400;
@@ -455,7 +500,7 @@ const startSimulation = () => {
 }
 
 .highlight-bold {
-  color: var(--black);
+  color: var(--mm-text-primary);
   font-weight: 700;
 }
 
@@ -466,19 +511,19 @@ const startSimulation = () => {
 }
 
 .highlight-code {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   padding: 2px 6px;
   border-radius: 2px;
   font-family: var(--font-mono);
   font-size: 0.9em;
-  color: var(--black);
+  color: var(--mm-text-primary);
   font-weight: 600;
 }
 
 .slogan-text {
   font-size: 1.2rem;
   font-weight: 520;
-  color: var(--black);
+  color: var(--mm-text-primary);
   letter-spacing: 1px;
   border-left: 3px solid var(--orange);
   padding-left: 15px;
@@ -525,8 +570,8 @@ const startSimulation = () => {
 .scroll-down-btn {
   width: 40px;
   height: 40px;
-  border: 1px solid var(--border);
-  background: transparent;
+  border: 1px solid var(--mm-border);
+  background: var(--mm-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -544,7 +589,7 @@ const startSimulation = () => {
 .dashboard-section {
   display: flex;
   gap: 60px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--mm-border);
   padding-top: 60px;
   align-items: flex-start;
 }
@@ -563,7 +608,7 @@ const startSimulation = () => {
 .panel-header {
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: #999;
+  color: var(--mm-text-muted);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -582,7 +627,7 @@ const startSimulation = () => {
 }
 
 .section-desc {
-  color: var(--gray-text);
+  color: var(--mm-text-secondary);
   margin-bottom: 25px;
   line-height: 1.6;
 }
@@ -594,7 +639,8 @@ const startSimulation = () => {
 }
 
 .metric-card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--mm-border);
+  background: var(--mm-bg-elevated);
   padding: 20px 30px;
   min-width: 150px;
 }
@@ -608,12 +654,13 @@ const startSimulation = () => {
 
 .metric-label {
   font-size: 0.85rem;
-  color: #999;
+  color: var(--mm-text-muted);
 }
 
 /* 项目模拟步骤介绍 */
 .steps-container {
-  border: 1px solid var(--border);
+  border: 1px solid var(--mm-border);
+  background: var(--mm-bg-elevated);
   padding: 30px;
   position: relative;
 }
@@ -621,7 +668,7 @@ const startSimulation = () => {
 .steps-header {
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: #999;
+  color: var(--mm-text-muted);
   margin-bottom: 25px;
   display: flex;
   align-items: center;
@@ -648,8 +695,8 @@ const startSimulation = () => {
 .step-num {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--black);
-  opacity: 0.3;
+  color: var(--mm-text-muted);
+  opacity: 0.9;
 }
 
 .step-info {
@@ -664,7 +711,7 @@ const startSimulation = () => {
 
 .step-desc {
   font-size: 0.85rem;
-  color: var(--gray-text);
+  color: var(--mm-text-secondary);
 }
 
 /* 右侧交互控制台 */
@@ -673,8 +720,9 @@ const startSimulation = () => {
 }
 
 .console-box {
-  border: 1px solid #CCC; /* 外部实线 */
-  padding: 8px; /* 内边距形成双重边框感 */
+  border: 1px solid var(--mm-border-subtle);
+  background: var(--mm-bg-elevated);
+  padding: 8px;
 }
 
 .console-section {
@@ -691,11 +739,56 @@ const startSimulation = () => {
   margin-bottom: 15px;
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: #666;
+  color: var(--mm-text-secondary);
+}
+
+.seed-block {
+  margin-bottom: 12px;
+}
+
+.seed-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--mm-text-secondary);
+  margin-bottom: 8px;
+}
+
+.seed-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--mm-border);
+  background: var(--mm-bg-input);
+  color: var(--mm-text-primary);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  resize: vertical;
+  outline: none;
+  min-height: 100px;
+}
+
+.seed-textarea:focus {
+  border-color: var(--mm-accent);
+  background: var(--mm-bg-muted);
+}
+
+.seed-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.seed-divider {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--mm-text-muted);
+  margin: 10px 0 12px;
+  letter-spacing: 0.5px;
 }
 
 .upload-zone {
-  border: 1px dashed #CCC;
+  border: 1px dashed var(--mm-border-subtle);
   height: 200px;
   overflow-y: auto;
   display: flex;
@@ -703,7 +796,7 @@ const startSimulation = () => {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
-  background: #FAFAFA;
+  background: var(--mm-bg-input);
 }
 
 .upload-zone.has-files {
@@ -711,8 +804,8 @@ const startSimulation = () => {
 }
 
 .upload-zone:hover {
-  background: #F0F0F0;
-  border-color: #999;
+  background: var(--mm-bg-muted);
+  border-color: var(--mm-text-muted);
 }
 
 .upload-placeholder {
@@ -722,24 +815,25 @@ const startSimulation = () => {
 .upload-icon {
   width: 40px;
   height: 40px;
-  border: 1px solid #DDD;
+  border: 1px solid var(--mm-border);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 15px;
-  color: #999;
+  color: var(--mm-text-muted);
 }
 
 .upload-title {
   font-weight: 500;
   font-size: 0.9rem;
   margin-bottom: 5px;
+  color: var(--mm-text-primary);
 }
 
 .upload-hint {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: #999;
+  color: var(--mm-text-muted);
 }
 
 .file-list {
@@ -753,9 +847,9 @@ const startSimulation = () => {
 .file-item {
   display: flex;
   align-items: center;
-  background: var(--white);
+  background: var(--mm-bg-muted);
   padding: 8px 12px;
-  border: 1px solid #EEE;
+  border: 1px solid var(--mm-border);
   font-family: var(--font-mono);
   font-size: 0.85rem;
 }
@@ -770,7 +864,7 @@ const startSimulation = () => {
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-  color: #999;
+  color: var(--mm-text-muted);
 }
 
 .console-divider {
@@ -784,27 +878,28 @@ const startSimulation = () => {
   content: '';
   flex: 1;
   height: 1px;
-  background: #EEE;
+  background: var(--mm-border);
 }
 
 .console-divider span {
   padding: 0 15px;
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: #BBB;
+  color: var(--mm-text-muted);
   letter-spacing: 1px;
 }
 
 .input-wrapper {
   position: relative;
-  border: 1px solid #DDD;
-  background: #FAFAFA;
+  border: 1px solid var(--mm-border);
+  background: var(--mm-bg-input);
 }
 
 .code-input {
   width: 100%;
   border: none;
   background: transparent;
+  color: var(--mm-text-primary);
   padding: 20px;
   font-family: var(--font-mono);
   font-size: 0.9rem;
@@ -820,13 +915,13 @@ const startSimulation = () => {
   right: 15px;
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: #AAA;
+  color: var(--mm-text-muted);
 }
 
 .start-engine-btn {
   width: 100%;
-  background: var(--black);
-  color: var(--white);
+  background: var(--mm-accent);
+  color: #0a0a0c;
   border: none;
   padding: 20px;
   font-family: var(--font-mono);
@@ -844,14 +939,14 @@ const startSimulation = () => {
 
 /* 可点击状态（非禁用） */
 .start-engine-btn:not(:disabled) {
-  background: var(--black);
-  border: 1px solid var(--black);
+  background: var(--mm-accent);
+  border: 1px solid var(--mm-accent);
   animation: pulse-border 2s infinite;
 }
 
 .start-engine-btn:hover:not(:disabled) {
-  background: var(--orange);
-  border-color: var(--orange);
+  background: var(--mm-accent-hover);
+  border-color: var(--mm-accent-hover);
   transform: translateY(-2px);
 }
 
@@ -860,18 +955,62 @@ const startSimulation = () => {
 }
 
 .start-engine-btn:disabled {
-  background: #E5E5E5;
-  color: #999;
+  background: var(--mm-bg-muted);
+  color: var(--mm-text-muted);
   cursor: not-allowed;
   transform: none;
-  border: 1px solid #E5E5E5;
+  border: 1px solid var(--mm-border);
+}
+
+.demo-viz-hint {
+  margin: 14px 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--mm-text-secondary);
+  font-family: var(--font-mono);
+}
+
+.demo-viz-btn {
+  width: 100%;
+  margin-top: 4px;
+  background: transparent;
+  color: var(--mm-text-primary);
+  border: 1px solid var(--mm-border-strong);
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.demo-viz-btn:hover:not(:disabled) {
+  background: var(--mm-bg-muted);
+  border-color: var(--mm-accent);
+  color: var(--mm-accent-hover);
+}
+
+.demo-viz-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.home-inline-error {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--mm-error);
+  font-family: var(--font-mono);
 }
 
 /* 引导动画：微妙的边框脉冲 */
 @keyframes pulse-border {
-  0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); }
-  70% { box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+  0% { box-shadow: 0 0 0 0 var(--mm-accent-glow); }
+  70% { box-shadow: 0 0 0 8px rgba(255, 107, 53, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
 }
 
 /* 响应式适配 */

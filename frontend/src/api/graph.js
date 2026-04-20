@@ -68,3 +68,14 @@ export function getProject(projectId) {
     method: 'get'
   })
 }
+
+/**
+ * Pratinjau UI: proyek + graf statis tanpa LLM/Zep (POST /api/graph/demo/visualization/bootstrap).
+ */
+export function bootstrapDemoVisualization(payload = {}) {
+  return service({
+    url: '/api/graph/demo/visualization/bootstrap',
+    method: 'post',
+    data: payload
+  })
+}

@@ -53,3 +53,9 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+
+# PyTorch 2.3+ does not publish macOS x86_64 wheels; camel-ai stack pulls torch via sentence-transformers.
+[tool.uv]
+override-dependencies = [
+    "torch==2.2.2",
+]

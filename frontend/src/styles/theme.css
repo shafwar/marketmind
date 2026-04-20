@@ -1,0 +1,55 @@
+/**
+ * MarketMind — tema gelap global (token + html/body).
+ */
+:root {
+  color-scheme: dark;
+
+  --mm-page-bg: #09090b;
+  --mm-bg-surface: #101014;
+  --mm-bg-elevated: #16161c;
+  --mm-bg-muted: #1f1f26;
+  --mm-bg-input: #14141a;
+
+  --mm-border: #2a2a34;
+  --mm-border-subtle: #35353f;
+  --mm-border-strong: #45454f;
+
+  --mm-text-primary: #ececf1;
+  --mm-text-secondary: #a1a1aa;
+  --mm-text-muted: #71717a;
+  --mm-text-faint: #52525b;
+
+  --mm-accent: #ff6b35;
+  --mm-accent-hover: #ff8f5c;
+  --mm-accent-soft: rgba(255, 107, 53, 0.18);
+  --mm-accent-glow: rgba(255, 107, 53, 0.35);
+
+  --mm-nav-bg: #030303;
+  --mm-nav-text: #f4f4f5;
+
+  --mm-success: #4ade80;
+  --mm-success-bg: rgba(74, 222, 128, 0.12);
+  --mm-warning-bg: rgba(234, 179, 8, 0.14);
+  --mm-warning-text: #fbbf24;
+  --mm-warning-border: rgba(234, 179, 8, 0.4);
+  --mm-error: #f87171;
+
+  --mm-graph-canvas: #0c0c10;
+  --mm-graph-grid: #2d2d38;
+  --mm-graph-edge: #5c5c6a;
+  --mm-graph-edge-label: #a1a1aa;
+  --mm-graph-edge-label-bg: rgba(18, 18, 24, 0.92);
+  --mm-graph-node-ring: #0a0a0f;
+  --mm-graph-node-label: #d4d4d8;
+}
+
+html,
+body {
+  background: var(--mm-page-bg);
+  color: var(--mm-text-primary);
+}
+
+::placeholder {
+  color: var(--mm-text-muted);
+  opacity: 1;
+}

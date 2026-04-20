@@ -18,6 +18,7 @@ from ..utils.logger import get_logger
 from ..utils.locale import t, get_locale, set_locale
 from ..models.task import TaskManager, TaskStatus
 from ..models.project import ProjectManager, ProjectStatus
+from ..services.demo_visualization import DEMO_GRAPH_ID, load_demo_visualization_bundle, get_demo_graph_response
 
 # 获取日志器
 logger = get_logger('mirofish.api')
@@ -115,6 +116,56 @@ def reset_project(project_id: str):
         "message": t('api.projectReset', id=project_id),
         "data": project.to_dict()
     })
+
+
+# ============== Demo: pratinjau visualisasi (tanpa LLM / Zep) ==============
+
+@graph_bp.route('/demo/visualization/bootstrap', methods=['POST'])
+def bootstrap_demo_visualization():
+    """
+    Membuat proyek baru dengan ontology + graf statis agar UI dapat dimuat
+    tanpa memanggil LLM atau Zep (graph_id khusus).
+    """
+    try:
+        body = request.get_json(silent=True) or {}
+        scenario = (body.get('simulation_requirement') or body.get('scenario') or '').strip()
+        name = (body.get('name') or '').strip() or 'Demo visualisasi (tanpa LLM)'
+
+        bundle = load_demo_visualization_bundle()
+        project = ProjectManager.create_project(name=name)
+        project.ontology = bundle['ontology']
+        project.analysis_summary = bundle.get('analysis_summary', '')
+        project.simulation_requirement = scenario or None
+        project.status = ProjectStatus.GRAPH_COMPLETED
+        project.graph_id = DEMO_GRAPH_ID
+        project.graph_build_task_id = None
+        project.demo_visualization = True
+        project.files = []
+        project.total_text_length = len(scenario)
+        ProjectManager.save_project(project)
+
+        logger.info(f"Demo visualization project created: {project.project_id}")
+
+        return jsonify({
+            "success": True,
+            "data": {
+                "project_id": project.project_id,
+                "project_name": project.name,
+                "ontology": project.ontology,
+                "analysis_summary": project.analysis_summary,
+                "files": project.files,
+                "total_text_length": project.total_text_length,
+                "graph_id": project.graph_id,
+                "demo_visualization": True,
+            }
+        })
+    except Exception as e:
+        logger.error(f"bootstrap_demo_visualization failed: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }), 500
 
 
 # ============== 接口1：上传文件并生成本体 ==============
@@ -312,6 +363,12 @@ def build_graph():
                 "success": False,
                 "error": t('api.projectNotFound', id=project_id)
             }), 404
+
+        if project.demo_visualization:
+            return jsonify({
+                "success": False,
+                "error": t('api.demoBuildBlocked')
+            }), 400
 
         # 检查项目状态
         force = data.get('force', False)  # 强制重新构建
@@ -572,6 +629,13 @@ def get_graph_data(graph_id: str):
     获取图谱数据（节点和边）
     """
     try:
+        if graph_id == DEMO_GRAPH_ID:
+            graph_data = get_demo_graph_response()
+            return jsonify({
+                "success": True,
+                "data": graph_data
+            })
+
         if not Config.ZEP_API_KEY:
             return jsonify({
                 "success": False,
@@ -600,6 +664,12 @@ def delete_graph(graph_id: str):
     删除Zep图谱
     """
     try:
+        if graph_id == DEMO_GRAPH_ID:
+            return jsonify({
+                "success": True,
+                "message": t('api.demoGraphNoRemoteDelete')
+            })
+
         if not Config.ZEP_API_KEY:
             return jsonify({
                 "success": False,
