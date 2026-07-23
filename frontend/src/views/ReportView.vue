@@ -23,10 +23,9 @@
       <div class="header-right">
         <LanguageSwitcher />
         <div class="step-divider"></div>
-        <div class="workflow-step">
-          <span class="step-num">{{ $t('main.stepPrefix') }} 4/5</span>
-          <span class="step-name">{{ $tm('main.stepNames')[3] }}</span>
-        </div>
+        <JourneyProgress :current="4" />
+        <div class="step-divider"></div>
+        <button class="export-btn" @click="exportDossier">{{ $t('main.exportDossier') }}</button>
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
           <span class="dot"></span>
@@ -34,6 +33,8 @@
         </span>
       </div>
     </header>
+
+    <MeaningRail page="keputusan" />
 
     <!-- Main Content Area -->
     <main class="content-area">
@@ -73,6 +74,8 @@ import { getProject, getGraphData } from '../api/graph'
 import { getSimulation } from '../api/simulation'
 import { getReport } from '../api/report'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import JourneyProgress from '../components/JourneyProgress.vue'
+import MeaningRail from '../components/MeaningRail.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -139,6 +142,13 @@ const toggleMaximize = (target) => {
   } else {
     viewMode.value = target
   }
+}
+
+// Export the report as a board-ready PDF via the browser print dialog.
+// Force workbench (report full-width, graph hidden) so the printed dossier is document-only.
+const exportDossier = () => {
+  viewMode.value = 'workbench'
+  requestAnimationFrame(() => window.print())
 }
 
 // --- Data Logic ---
@@ -224,7 +234,7 @@ onMounted(() => {
   flex-direction: column;
   background: #FFF;
   overflow: hidden;
-  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
 /* Header */
@@ -349,5 +359,47 @@ onMounted(() => {
 
 .panel-wrapper.left {
   border-right: 1px solid #EAEAEA;
+}
+
+.export-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 7px 14px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.export-btn:hover {
+  opacity: 0.85;
+}
+
+/* Board-ready print: strip chrome, print the report document only */
+@media print {
+  .app-header,
+  .meaning-rail,
+  .panel-wrapper.left {
+    display: none !important;
+  }
+  .main-view {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .content-area {
+    display: block !important;
+    overflow: visible !important;
+  }
+  .panel-wrapper.right {
+    width: 100% !important;
+    opacity: 1 !important;
+    transform: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
 }
 </style>

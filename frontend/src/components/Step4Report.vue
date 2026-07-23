@@ -15,15 +15,16 @@
             <p class="sub-title">{{ reportOutline.summary }}</p>
             <div class="header-divider"></div>
             <div class="marketmind-outcome-strip">
+              <span class="outcome-eyebrow">{{ $t('step4.eyebrowDirectional') }}</span>
               <h2 class="outcome-strip-title">{{ $t('step4.simulationMarketTitle') }}</h2>
               <div class="outcome-grid">
+                <div class="outcome-card outcome-card--accent outcome-card--confidence">
+                  <h3 class="outcome-card-title">{{ $t('step4.confidenceScore') }}</h3>
+                  <p class="outcome-card-body outcome-confidence">{{ outcomeConfidence }}</p>
+                </div>
                 <div class="outcome-card">
                   <h3 class="outcome-card-title">{{ $t('step4.primaryRecommendation') }}</h3>
                   <p class="outcome-card-body">{{ outcomeRecommendation }}</p>
-                </div>
-                <div class="outcome-card outcome-card--accent">
-                  <h3 class="outcome-card-title">{{ $t('step4.confidenceScore') }}</h3>
-                  <p class="outcome-card-body outcome-confidence">{{ outcomeConfidence }}</p>
                 </div>
                 <div class="outcome-card">
                   <h3 class="outcome-card-title">{{ $t('step4.riskAnalysis') }}</h3>
@@ -33,6 +34,10 @@
                   <h3 class="outcome-card-title">{{ $t('step4.additionalInsights') }}</h3>
                   <p class="outcome-card-body">{{ outcomeInsights }}</p>
                 </div>
+              </div>
+              <div class="outcome-limits">
+                <span class="outcome-limits-title">{{ $t('step4.limitsTitle') }}</span>
+                <p class="outcome-limits-note">{{ $t('step4.limitsNote') }}</p>
               </div>
             </div>
           </div>
@@ -2324,6 +2329,42 @@ watch(() => props.reportId, (newId) => {
   font-size: 1.35rem;
   font-weight: 600;
 }
+.outcome-eyebrow {
+  display: block;
+  font-family: var(--mm-font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #ff6b35;
+  margin-bottom: 0.4rem;
+}
+.outcome-card--confidence {
+  grid-column: span 2;
+  background: #fff;
+}
+.outcome-card--confidence .outcome-confidence {
+  font-size: 2.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.outcome-limits {
+  margin-top: 0.85rem;
+  border-top: 1px dashed #d1d5db;
+  padding-top: 0.75rem;
+}
+.outcome-limits-title {
+  font-family: var(--mm-font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #6b7280;
+}
+.outcome-limits-note {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #4b5563;
+}
 .workflow-timeline-wrap {
   margin-top: 0.5rem;
 }
@@ -2343,7 +2384,7 @@ watch(() => props.reportId, (newId) => {
   display: flex;
   flex-direction: column;
   background: #F8F9FA;
-  font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   overflow: hidden;
 }
 
@@ -2621,7 +2662,7 @@ watch(() => props.reportId, (newId) => {
 
 /* Generated Content */
 .generated-content {
-  font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.8;
   color: #374151;

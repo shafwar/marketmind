@@ -1090,7 +1090,7 @@ onUnmounted(() => {
   flex-direction: column;
   background: var(--mm-bg-surface);
   color: var(--mm-text-primary);
-  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
 .scroll-container {
@@ -2168,7 +2168,7 @@ onUnmounted(() => {
 }
 
 .narrative-text {
-  font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   font-size: 14px;
   color: #334155;
   line-height: 1.8;

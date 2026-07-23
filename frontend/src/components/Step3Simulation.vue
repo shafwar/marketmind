@@ -1,5 +1,10 @@
 <template>
   <div class="simulation-panel">
+    <!-- Signature line: the emergent-behavior claim, front and center -->
+    <div class="signature-line">
+      <span class="sig-mark" aria-hidden="true">◆</span>
+      {{ $t('step3.signatureLine') }}
+    </div>
     <!-- Top Control Bar -->
     <div class="control-bar">
       <div class="status-group">
@@ -105,6 +110,11 @@
 
     <!-- Main Content: Dual Timeline -->
     <div class="main-content-area" ref="scrollContainer">
+      <!-- Debate framing: the feed is investors reacting to the policy -->
+      <div class="debate-header">
+        <h3 class="debate-title">{{ $t('step3.debateTitle') }}</h3>
+        <p class="debate-subtitle">{{ $t('step3.debateSubtitle') }}</p>
+      </div>
       <!-- Timeline Header -->
       <div class="timeline-header" v-if="allActions.length > 0">
         <div class="timeline-stats">
@@ -705,8 +715,47 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   background: #FFFFFF;
-  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   overflow: hidden;
+}
+
+.signature-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #fff7f3;
+  border-bottom: 1px solid #ffd9c7;
+  color: #9a3412;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.signature-line .sig-mark {
+  color: #ff6b35;
+  font-size: 0.8rem;
+}
+
+.debate-header {
+  flex-shrink: 0;
+  padding: 16px 20px 8px;
+  border-bottom: 1px solid #eef0f2;
+}
+
+.debate-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.debate-subtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #6b7280;
 }
 
 /* --- Control Bar --- */

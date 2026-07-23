@@ -23,10 +23,7 @@
       <div class="header-right">
         <LanguageSwitcher />
         <div class="step-divider"></div>
-        <div class="workflow-step">
-          <span class="step-num">{{ $t('main.stepPrefix') }} 3/5</span>
-          <span class="step-name">{{ $tm('main.stepNames')[2] }}</span>
-        </div>
+        <JourneyProgress :current="3" />
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
           <span class="dot"></span>
@@ -34,6 +31,8 @@
         </span>
       </div>
     </header>
+
+    <MeaningRail page="simulasi" />
 
     <!-- Main Content Area -->
     <main class="content-area">
@@ -76,6 +75,8 @@ import Step3Simulation from '../components/Step3Simulation.vue'
 import { getProject, getGraphData } from '../api/graph'
 import { getSimulation, getSimulationConfig, stopSimulation, closeSimulationEnv, getEnvStatus } from '../api/simulation'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import JourneyProgress from '../components/JourneyProgress.vue'
+import MeaningRail from '../components/MeaningRail.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -322,7 +323,7 @@ onUnmounted(() => {
   flex-direction: column;
   background: #FFF;
   overflow: hidden;
-  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
 /* Header */

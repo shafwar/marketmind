@@ -123,43 +123,91 @@ def generate_report():
         
         # Capture locale before spawning background thread
         current_locale = get_locale()
+        
+        from ..services.demo_visualization import DEMO_GRAPH_ID
+        is_demo = (graph_id == DEMO_GRAPH_ID)
 
         # 定义后台任务
-        def run_generate():
-            set_locale(current_locale)
-            try:
-                task_manager.update_task(
-                    task_id,
-                    status=TaskStatus.PROCESSING,
-                    progress=0,
-                    message=t('api.initReportAgent')
-                )
-                
-                # 创建Report Agent
-                agent = ReportAgent(
-                    graph_id=graph_id,
-                    simulation_id=simulation_id,
-                    simulation_requirement=simulation_requirement
-                )
-                
-                # 进度回调
-                def progress_callback(stage, progress, message):
+        if is_demo:
+            def run_generate():
+                set_locale(current_locale)
+                try:
                     task_manager.update_task(
                         task_id,
-                        progress=progress,
-                        message=f"[{stage}] {message}"
+                        status=TaskStatus.PROCESSING,
+                        progress=0,
+                        message="[1/5] Menginisialisasi analisis laporan..."
                     )
-                
-                # 生成报告（传入预先生成的 report_id）
-                report = agent.generate_report(
-                    progress_callback=progress_callback,
-                    report_id=report_id
-                )
-                
-                # 保存报告
-                ReportManager.save_report(report)
-                
-                if report.status == ReportStatus.COMPLETED:
+                    import time
+                    from datetime import datetime
+                    from ..services.report_agent import Report, ReportOutline, ReportSection, ReportStatus, ReportManager
+                    
+                    time.sleep(0.5)
+                    task_manager.update_task(
+                        task_id,
+                        progress=20,
+                        message="[2/5] Mengambil data aktivitas simulasi..."
+                    )
+                    
+                    time.sleep(0.5)
+                    task_manager.update_task(
+                        task_id,
+                        progress=50,
+                        message="[3/5] Menganalisis dinamika sentimen pelaku pasar..."
+                    )
+                    
+                    time.sleep(0.5)
+                    task_manager.update_task(
+                        task_id,
+                        progress=80,
+                        message="[4/5] Menyusun draf bab laporan..."
+                    )
+                    
+                    time.sleep(0.5)
+                    task_manager.update_task(
+                        task_id,
+                        progress=95,
+                        message="[5/5] Memfinalisasi laporan dan menyalin rekomendasi..."
+                    )
+                    
+                    sections = [
+                        ReportSection(
+                            title="Ringkasan Eksekutif",
+                            content="Kenaikan suku bunga acuan BI-Rate dari 6.00% menjadi 6.25% merupakan respons defensif Bank Indonesia untuk menjaga stabilitas Rupiah di tengah ketidakpastian moneter global. Hasil simulasi menunjukkan adanya polarisasi yang jelas di antara pelaku pasar: regulator dan kelompok investor konservatif menyambut baik keputusan ini, sementara investor ritel saham mengekspresikan kekhawatiran tinggi terhadap potensi koreksi IHSG."
+                        ),
+                        ReportSection(
+                            title="Analisis Sentimen dan Perilaku Agen",
+                            content="1. **Bank Indonesia (Regulator)**: Konsisten menyuarakan pentingnya stabilitas jangka panjang dan pengendalian inflasi.\n\n2. **Investor Ritel Saham (Budi & Aditya)**: Mengalami kekhawatiran langsung terhadap peningkatan biaya modal emiten dan potensi koreksi sektor properti serta otomotif. Beberapa menyarankan pengalihan ke aset kripto yang dinilai anti-inflasi.\n\n3. **Investor Konservatif (Siti Rahma & Fixed Income Fanatic)**: Merespons secara positif dengan rencana realokasi portofolio dari pasar saham ke Surat Berharga Negara (SBN) ritel seperti ORI atau SR karena yield yang ditawarkan menjadi lebih menarik."
+                        ),
+                        ReportSection(
+                            title="Rekomendasi Kebijakan dan Strategi Portofolio",
+                            content="- **Untuk Pemerintah/Regulator**: Perlu mempercepat peluncuran SBN Ritel baru untuk menyerap likuiditas pelaku pasar yang mencari safe haven.\n\n- **Untuk Investor**: Lakukan strategi defensif dengan memperbesar porsi reksa dana pendapatan tetap dan obligasi pemerintah, serta mencicil saham blue-chip sektor perbankan yang diuntungkan oleh melebarnya net interest margin (NIM)."
+                        )
+                    ]
+                    
+                    outline = ReportOutline(
+                        title="Laporan Dampak Kenaikan BI-Rate Terhadap Stabilitas Rupiah dan IHSG",
+                        summary="Laporan ini merangkum perdebatan, sentimen, dan proyeksi pasca simulasi rencana kenaikan BI-Rate sebesar 25 bps.",
+                        sections=sections
+                    )
+                    
+                    markdown_content = outline.to_markdown()
+                    
+                    report = Report(
+                        report_id=report_id,
+                        simulation_id=simulation_id,
+                        graph_id=graph_id,
+                        simulation_requirement=simulation_requirement,
+                        status=ReportStatus.COMPLETED,
+                        outline=outline,
+                        markdown_content=markdown_content,
+                        created_at=datetime.now().isoformat(),
+                        completed_at=datetime.now().isoformat()
+                    )
+                    
+                    # Save report using manager
+                    ReportManager.save_report(report)
+                    
                     task_manager.complete_task(
                         task_id,
                         result={
@@ -168,12 +216,60 @@ def generate_report():
                             "status": "completed"
                         }
                     )
-                else:
-                    task_manager.fail_task(task_id, report.error or t('api.reportGenerateFailed'))
-                
-            except Exception as e:
-                logger.error(f"报告生成失败: {str(e)}")
-                task_manager.fail_task(task_id, str(e))
+                    logger.info(f"Demo report generation completed: {report_id}")
+                except Exception as ex:
+                    logger.error(f"Demo report generation failed: {ex}")
+                    task_manager.fail_task(task_id, str(ex))
+        else:
+            def run_generate():
+                set_locale(current_locale)
+                try:
+                    task_manager.update_task(
+                        task_id,
+                        status=TaskStatus.PROCESSING,
+                        progress=0,
+                        message=t('api.initReportAgent')
+                    )
+                    
+                    # 创建Report Agent
+                    agent = ReportAgent(
+                        graph_id=graph_id,
+                        simulation_id=simulation_id,
+                        simulation_requirement=simulation_requirement
+                    )
+                    
+                    # 进度回调
+                    def progress_callback(stage, progress, message):
+                        task_manager.update_task(
+                            task_id,
+                            progress=progress,
+                            message=f"[{stage}] {message}"
+                        )
+                    
+                    # 生成报告（传入预先生成的 report_id）
+                    report = agent.generate_report(
+                        progress_callback=progress_callback,
+                        report_id=report_id
+                    )
+                    
+                    # 保存报告
+                    ReportManager.save_report(report)
+                    
+                    if report.status == ReportStatus.COMPLETED:
+                        task_manager.complete_task(
+                            task_id,
+                            result={
+                                "report_id": report.report_id,
+                                "simulation_id": simulation_id,
+                                "status": "completed"
+                            }
+                        )
+                    else:
+                        task_manager.fail_task(task_id, report.error or t('api.reportGenerateFailed'))
+                    
+                except Exception as e:
+                    logger.error(f"报告生成失败: {str(e)}")
+                    task_manager.fail_task(task_id, str(e))
         
         # 启动后台线程
         thread = threading.Thread(target=run_generate, daemon=True)

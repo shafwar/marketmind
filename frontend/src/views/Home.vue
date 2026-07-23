@@ -44,12 +44,82 @@
         <div class="hero-right">
           <!-- Logo 区域 -->
           <div class="logo-container">
-            <img src="../assets/logo/MiroFish_logo_left.jpeg" alt="MarketMind" class="hero-logo" />
+            <div class="hero-logo" role="img" aria-label="MarketMind">Market<span class="wordmark-accent">Mind</span></div>
           </div>
           
           <button class="scroll-down-btn" @click="scrollToBottom">
             ↓
           </button>
+        </div>
+      </section>
+
+      <!-- Narrative band: problem → output preview → why → institutions -->
+      <section class="narrative-band">
+        <div class="problem-strip">
+          <span class="band-eyebrow">{{ $t('home.problemEyebrow') }}</span>
+          <ul class="problem-list">
+            <li>{{ $t('home.problem1') }}</li>
+            <li>{{ $t('home.problem2') }}</li>
+            <li>{{ $t('home.problem3') }}</li>
+          </ul>
+        </div>
+
+        <div class="narrative-grid">
+          <!-- Output preview: show the destination -->
+          <div class="output-preview mm-card">
+            <span class="band-eyebrow accent">{{ $t('home.outputEyebrow') }}</span>
+            <div class="op-title">{{ $t('home.outputTitle') }}</div>
+            <div class="op-verdict-row">
+              <span class="op-verdict mm-verdict--caution">{{ $t('home.outputVerdict') }}</span>
+              <span class="op-confidence">{{ $t('home.outputConfidence') }}</span>
+            </div>
+            <div class="op-columns">
+              <div class="op-block">
+                <h4>{{ $t('home.outputRisksTitle') }}</h4>
+                <ul>
+                  <li>{{ $t('home.outputRisk1') }}</li>
+                  <li>{{ $t('home.outputRisk2') }}</li>
+                </ul>
+              </div>
+              <div class="op-block">
+                <h4>{{ $t('home.outputActionsTitle') }}</h4>
+                <ul>
+                  <li>{{ $t('home.outputAction1') }}</li>
+                  <li>{{ $t('home.outputAction2') }}</li>
+                </ul>
+              </div>
+            </div>
+            <p class="op-disclaimer">{{ $t('home.outputDisclaimer') }}</p>
+          </div>
+
+          <!-- Why MarketMind: three pillars -->
+          <div class="pillars">
+            <span class="band-eyebrow">{{ $t('home.whyEyebrow') }}</span>
+            <div class="pillar">
+              <div class="pillar-title">{{ $t('home.pillar1Title') }}</div>
+              <div class="pillar-desc">{{ $t('home.pillar1Desc') }}</div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-title">{{ $t('home.pillar2Title') }}</div>
+              <div class="pillar-desc">{{ $t('home.pillar2Desc') }}</div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-title">{{ $t('home.pillar3Title') }}</div>
+              <div class="pillar-desc">{{ $t('home.pillar3Desc') }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Designed for -->
+        <div class="institutions">
+          <span class="inst-label">{{ $t('home.institutionsLabel') }}</span>
+          <div class="inst-names">
+            <span>Bank Indonesia</span>
+            <span>OJK</span>
+            <span>KSEI</span>
+            <span>Kementerian Keuangan</span>
+            <span>IDX</span>
+          </div>
         </div>
       </section>
 
@@ -171,7 +241,7 @@
                 
                 <div v-else class="file-list">
                   <div v-for="(file, index) in files" :key="index" class="file-item">
-                    <span class="file-icon">📄</span>
+                    <span class="file-icon" aria-hidden="true">▤</span>
                     <span class="file-name">{{ file.name }}</span>
                     <button @click.stop="removeFile(index)" class="remove-btn">×</button>
                   </div>
@@ -370,7 +440,7 @@ const startDemoVisualization = async () => {
 <style scoped>
 .home-container {
   --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  --font-sans: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   --font-cn: 'Noto Sans SC', system-ui, sans-serif;
   --orange: var(--mm-accent);
   min-height: 100vh;
@@ -563,8 +633,17 @@ const startDemoVisualization = async () => {
 }
 
 .hero-logo {
-  max-width: 500px; /* 调整logo大小 */
-  width: 100%;
+  font-family: var(--mm-font-ui, 'Hanken Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: clamp(48px, 6vw, 92px);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--mm-text-primary);
+  user-select: none;
+}
+
+.hero-logo .wordmark-accent {
+  color: var(--mm-accent);
 }
 
 .scroll-down-btn {
@@ -1006,6 +1085,201 @@ const startDemoVisualization = async () => {
   font-family: var(--font-mono);
 }
 
+/* Narrative band */
+.narrative-band {
+  border-top: 1px solid var(--mm-border);
+  padding-top: 60px;
+  margin-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.band-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--mm-text-muted);
+}
+
+.band-eyebrow.accent {
+  color: var(--mm-accent);
+}
+
+.problem-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.problem-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.problem-list li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--mm-text-secondary);
+}
+
+.problem-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  background: var(--mm-accent);
+}
+
+.narrative-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.output-preview {
+  padding: 28px 32px;
+}
+
+.op-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 12px 0 20px;
+  color: var(--mm-text-primary);
+}
+
+.op-verdict-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.op-verdict {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+}
+
+.op-confidence {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--mm-text-secondary);
+}
+
+.op-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.op-block h4 {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mm-text-muted);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.op-block ul {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.op-block li {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--mm-text-secondary);
+}
+
+.op-disclaimer {
+  border-top: 1px solid var(--mm-border);
+  padding-top: 14px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mm-text-muted);
+}
+
+.pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pillar {
+  border-left: 2px solid var(--mm-accent);
+  padding-left: 16px;
+}
+
+.pillar-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin-bottom: 4px;
+  color: var(--mm-text-primary);
+}
+
+.pillar-desc {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--mm-text-secondary);
+}
+
+.institutions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--mm-border);
+  padding-top: 28px;
+}
+
+.inst-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--mm-text-muted);
+  text-transform: uppercase;
+}
+
+.inst-names {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.inst-names span {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--mm-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 1024px) {
+  .problem-list,
+  .narrative-grid,
+  .op-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* 引导动画：微妙的边框脉冲 */
 @keyframes pulse-border {
   0% { box-shadow: 0 0 0 0 var(--mm-accent-glow); }
@@ -1029,7 +1303,7 @@ const startDemoVisualization = async () => {
   }
   
   .hero-logo {
-    max-width: 200px;
+    font-size: clamp(40px, 12vw, 64px);
     margin-bottom: 20px;
   }
 }
@@ -1039,7 +1313,7 @@ const startDemoVisualization = async () => {
 /* English locale adjustments (unscoped to target html[lang]) */
 html[lang="en"] .main-title {
   font-size: 3.5rem;
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   letter-spacing: -1px;
 }
 
@@ -1072,7 +1346,7 @@ html[lang="en"] .status-section .status-ready {
 }
 
 html[lang="en"] .status-section .metric-value {
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1.4rem;
 }
 
