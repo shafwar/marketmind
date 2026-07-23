@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Membuat proyek demo (graf statis, tanpa LLM/Zep) dan membuka UI proses di browser.
 set -euo pipefail
-API_BASE="${DEMO_VIZ_API:-http://127.0.0.1:5001}"
+API_BASE="${DEMO_VIZ_API:-http://127.0.0.1:5055}"
 URL="${API_BASE%/}/api/graph/demo/visualization/bootstrap"
 FRONT="${DEMO_VIZ_FRONT:-http://localhost:3000}"
 

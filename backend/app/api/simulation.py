@@ -470,22 +470,29 @@ def prepare_simulation():
         
         # ========== 同步获取实体数量（在后台任务启动前） ==========
         # 这样前端在调用prepare后立即就能获取到预期Agent总数
-        try:
-            logger.info(f"同步获取实体数量: graph_id={state.graph_id}")
-            reader = ZepEntityReader()
-            # 快速读取实体（不需要边信息，只统计数量）
-            filtered_preview = reader.filter_defined_entities(
-                graph_id=state.graph_id,
-                defined_entity_types=entity_types_list,
-                enrich_with_edges=False  # 不获取边信息，加快速度
-            )
-            # 保存实体数量到状态（供前端立即获取）
-            state.entities_count = filtered_preview.filtered_count
-            state.entity_types = list(filtered_preview.entity_types)
-            logger.info(f"预期实体数量: {filtered_preview.filtered_count}, 类型: {filtered_preview.entity_types}")
-        except Exception as e:
-            logger.warning(f"同步获取实体数量失败（将在后台任务中重试）: {e}")
-            # 失败不影响后续流程，后台任务会重新获取
+        from ..services.demo_visualization import DEMO_GRAPH_ID
+        is_demo = (state.graph_id == DEMO_GRAPH_ID)
+        
+        if is_demo:
+            state.entities_count = 7
+            state.entity_types = ["Institution", "Indicator", "Currency", "MarketIndex", "AssetClass", "InvestorGroup"]
+        else:
+            try:
+                logger.info(f"同步获取实体数量: graph_id={state.graph_id}")
+                reader = ZepEntityReader()
+                # 快速读取实体（不需要边信息，只统计数量）
+                filtered_preview = reader.filter_defined_entities(
+                    graph_id=state.graph_id,
+                    defined_entity_types=entity_types_list,
+                    enrich_with_edges=False  # 不获取边信息，加快速度
+                )
+                # 保存实体数量到状态（供前端立即获取）
+                state.entities_count = filtered_preview.filtered_count
+                state.entity_types = list(filtered_preview.entity_types)
+                logger.info(f"预期实体数量: {filtered_preview.filtered_count}, 类型: {filtered_preview.entity_types}")
+            except Exception as e:
+                logger.warning(f"同步获取实体数量失败（将在后台任务中重试）: {e}")
+                # 失败不影响后续流程，后台任务会重新获取
         
         # 创建异步任务
         task_manager = TaskManager()
@@ -503,6 +510,378 @@ def prepare_simulation():
         
         # Capture locale before spawning background thread
         current_locale = get_locale()
+
+        if is_demo:
+            def run_demo_prepare():
+                set_locale(current_locale)
+                try:
+                    task_manager.update_task(
+                        task_id,
+                        status=TaskStatus.PROCESSING,
+                        progress=0,
+                        message="[1/4] Membaca entitas dari graf demo..."
+                    )
+                    import time
+                    import json
+                    from datetime import datetime
+                    
+                    time.sleep(0.5)
+                    task_manager.update_task(
+                        task_id,
+                        progress=20,
+                        message="[2/4] Menghubungkan ke Zep Graph..."
+                    )
+                    
+                    time.sleep(0.5)
+                    sim_dir = os.path.join(Config.OASIS_SIMULATION_DATA_DIR, simulation_id)
+                    os.makedirs(sim_dir, exist_ok=True)
+                    
+                    profiles = [
+                        {
+                            "user_id": 0,
+                            "username": "Bank Indonesia",
+                            "name": "bank_indonesia",
+                            "profession": "Central Bank",
+                            "bio": "Akun resmi Bank Indonesia. Mengatur kebijakan moneter untuk menjaga kestabilitas Rupiah.",
+                            "interested_topics": ["BI-Rate", "Rupiah", "KebijakanMoneter", "Inflasi"],
+                            "age": 73,
+                            "gender": "other",
+                            "country": "Indonesia",
+                            "mbti": "INTJ",
+                            "persona": "Bank Indonesia bersifat sangat analitis, formal, dan berorientasi pada stabilitas makroekonomi jangka panjang. Setiap keputusan didasarkan pada data ekonomi yang kuat.",
+                            "karma": 50000,
+                            "created_at": "1953-07-01T00:00:00"
+                        },
+                        {
+                            "user_id": 1,
+                            "username": "Budi Santoso",
+                            "name": "budi_investor",
+                            "profession": "Swasta / Retail Investor",
+                            "bio": "Pecinta pasar modal domestik. Memantau IHSG setiap hari kerja. Kadang cuan, sering sangkut.",
+                            "interested_topics": ["IHSG", "Saham", "Dividen", "BI-Rate"],
+                            "age": 34,
+                            "gender": "male",
+                            "country": "Indonesia",
+                            "mbti": "ENFP",
+                            "persona": "Budi adalah investor ritel yang aktif di komunitas online. Dia cenderung emosional saat pasar memerah dan sering mencari konfirmasi dari investor lain sebelum mengambil tindakan jual atau beli.",
+                            "karma": 1250,
+                            "created_at": "2020-04-12T10:00:00"
+                        },
+                        {
+                            "user_id": 2,
+                            "username": "Rupiah Tracker",
+                            "name": "rupiah_idr",
+                            "profession": "Market Analyst",
+                            "bio": "Analisis pergerakan nilai tukar Rupiah (IDR) terhadap USD dan mata uang utama dunia.",
+                            "interested_topics": ["Rupiah", "USD", "Macroeconomics", "Forex"],
+                            "age": 28,
+                            "gender": "male",
+                            "country": "Indonesia",
+                            "mbti": "ISTJ",
+                            "persona": "Rupiah Tracker berfokus pada data forex dan arus modal asing (foreign flow). Selalu memposting data valuta asing secara objektif dan matematis.",
+                            "karma": 2200,
+                            "created_at": "2021-08-15T08:30:00"
+                        },
+                        {
+                            "user_id": 3,
+                            "username": "IHSG Daily",
+                            "name": "ihsg_update",
+                            "profession": "Financial Advisor",
+                            "bio": "Update harian Indeks Harga Saham Gabungan dan rekomendasi teknikal saham pilihan.",
+                            "interested_topics": ["IHSG", "AnalisisTeknikal", "BursaEfek", "MarketUpdate"],
+                            "age": 41,
+                            "gender": "male",
+                            "country": "Indonesia",
+                            "mbti": "ESTP",
+                            "persona": "IHSG Daily memiliki pengalaman bertahun-tahun di pasar modal. Pendekatannya pragmatis dan selalu memperingatkan pengikutnya tentang pentingnya manajemen risiko dan cut loss.",
+                            "karma": 8500,
+                            "created_at": "2018-01-20T09:00:00"
+                        },
+                        {
+                            "user_id": 4,
+                            "username": "Fixed Income Fanatic",
+                            "name": "sbn_hunter",
+                            "profession": "Wealth Manager",
+                            "bio": "Fokus pada Obligasi Negara, SBN Ritel, dan Reksa Dana Pendapatan Tetap. Cari cuan aman pasif income.",
+                            "interested_topics": ["Obligasi", "SBN", "ORI", "SR", "PasifIncome"],
+                            "age": 45,
+                            "gender": "female",
+                            "country": "Indonesia",
+                            "mbti": "ISFJ",
+                            "persona": "Fixed Income Fanatic sangat konservatif. Baginya, keamanan modal adalah nomor satu. Dia selalu menyarankan obligasi pemerintah sebagai pilihan terbaik dibanding volatilitas saham yang tinggi.",
+                            "karma": 4300,
+                            "created_at": "2019-11-05T14:15:00"
+                        },
+                        {
+                            "user_id": 5,
+                            "username": "Siti Rahma",
+                            "name": "siti_rahma",
+                            "profession": "Ibu Rumah Tangga / Investor Konservatif",
+                            "bio": "Mengelola keuangan keluarga lewat investasi aman. Suka deposito dan SBN ritel untuk masa depan anak.",
+                            "interested_topics": ["SBN", "InvestasiAman", "RencanaKeuangan", "BI-Rate"],
+                            "age": 39,
+                            "gender": "female",
+                            "country": "Indonesia",
+                            "mbti": "INFJ",
+                            "persona": "Siti Rahma sangat berhati-hati dalam menempatkan uang hasil tabungan keluarganya. Dia menghindari investasi spekulatif seperti kripto atau saham gorengan dan lebih menyukai kupon tetap bulanan.",
+                            "karma": 950,
+                            "created_at": "2022-03-24T11:00:00"
+                        },
+                        {
+                            "user_id": 6,
+                            "username": "Aditya Wijaya",
+                            "name": "adit_crypto",
+                            "profession": "Tech Specialist / Aggressive Investor",
+                            "bio": "Trader Kripto dan Tech Stocks. High risk, high return. Suku bunga naik cuma riak kecil.",
+                            "interested_topics": ["Crypto", "Bitcoin", "TechStocks", "IHSG", "BI-Rate"],
+                            "age": 26,
+                            "gender": "male",
+                            "country": "Indonesia",
+                            "mbti": "ENTP",
+                            "persona": "Aditya sangat agresif, menyukai teknologi blockchain dan aset digital berisiko tinggi. Dia tidak mempercayai sistem keuangan tradisional dan menganggap kenaikan suku bunga sebagai bukti kegagalan mata uang fiat.",
+                            "karma": 3100,
+                            "created_at": "2023-05-10T16:20:00"
+                        }
+                    ]
+                    
+                    with open(os.path.join(sim_dir, "reddit_profiles.json"), 'w', encoding='utf-8') as f:
+                        json.dump(profiles, f, ensure_ascii=False, indent=2)
+                        
+                    import csv
+                    with open(os.path.join(sim_dir, "twitter_profiles.csv"), 'w', newline='', encoding='utf-8') as f:
+                        writer = csv.writer(f)
+                        writer.writerow(['user_id', 'name', 'username', 'user_char', 'description'])
+                        for idx, p in enumerate(profiles):
+                            user_char = f"{p['bio']} {p['persona']}".replace('\n', ' ').replace('\r', ' ')
+                            description = p['bio'].replace('\n', ' ').replace('\r', ' ')
+                            writer.writerow([idx, p['username'], p['name'], user_char, description])
+                            
+                    task_manager.update_task(
+                        task_id,
+                        progress=60,
+                        message="[2/4] Berhasil menghasilkan profil untuk 7 agen sintetis"
+                    )
+                    
+                    time.sleep(0.5)
+                    
+                    config_data = {
+                        "simulation_id": simulation_id,
+                        "project_id": state.project_id,
+                        "graph_id": DEMO_GRAPH_ID,
+                        "simulation_requirement": simulation_requirement,
+                        "time_config": {
+                            "total_simulation_hours": 24,
+                            "minutes_per_round": 30,
+                            "peak_hours": [9, 10, 11, 14, 15, 16, 19, 20, 21],
+                            "work_hours": [9, 10, 11, 12, 13, 14, 15, 16, 17],
+                            "morning_hours": [6, 7, 8],
+                            "off_peak_hours": [0, 1, 2, 3, 4, 5, 22, 23],
+                            "agents_per_hour_min": 2,
+                            "agents_per_hour_max": 5
+                        },
+                        "agent_configs": [
+                            {
+                                "agent_id": 0,
+                                "entity_name": "Bank Indonesia",
+                                "entity_type": "Institution",
+                                "stance": "neutral",
+                                "active_hours": [9, 10, 11, 13, 14, 15, 16],
+                                "posts_per_hour": 1.0,
+                                "comments_per_hour": 1.0,
+                                "response_delay_min": 5,
+                                "response_delay_max": 15,
+                                "activity_level": 0.6,
+                                "sentiment_bias": 0.0,
+                                "influence_weight": 1.0
+                            },
+                            {
+                                "agent_id": 1,
+                                "entity_name": "Budi Santoso",
+                                "entity_type": "InvestorGroup",
+                                "stance": "negative",
+                                "active_hours": [9, 10, 11, 12, 14, 15, 16, 19, 20, 21],
+                                "posts_per_hour": 0.5,
+                                "comments_per_hour": 2.0,
+                                "response_delay_min": 2,
+                                "response_delay_max": 10,
+                                "activity_level": 0.8,
+                                "sentiment_bias": -0.5,
+                                "influence_weight": 0.4
+                            },
+                            {
+                                "agent_id": 2,
+                                "entity_name": "Rupiah Tracker",
+                                "entity_type": "Currency",
+                                "stance": "positive",
+                                "active_hours": [9, 10, 11, 13, 14, 15, 16, 17],
+                                "posts_per_hour": 0.8,
+                                "comments_per_hour": 1.0,
+                                "response_delay_min": 5,
+                                "response_delay_max": 20,
+                                "activity_level": 0.7,
+                                "sentiment_bias": 0.4,
+                                "influence_weight": 0.6
+                            },
+                            {
+                                "agent_id": 3,
+                                "entity_name": "IHSG Daily",
+                                "entity_type": "MarketIndex",
+                                "stance": "neutral",
+                                "active_hours": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+                                "posts_per_hour": 1.2,
+                                "comments_per_hour": 1.5,
+                                "response_delay_min": 3,
+                                "response_delay_max": 12,
+                                "activity_level": 0.9,
+                                "sentiment_bias": 0.0,
+                                "influence_weight": 0.8
+                            },
+                            {
+                                "agent_id": 4,
+                                "entity_name": "Fixed Income Fanatic",
+                                "entity_type": "AssetClass",
+                                "stance": "positive",
+                                "active_hours": [9, 10, 11, 14, 15, 16, 20, 21],
+                                "posts_per_hour": 0.4,
+                                "comments_per_hour": 1.8,
+                                "response_delay_min": 4,
+                                "response_delay_max": 18,
+                                "activity_level": 0.6,
+                                "sentiment_bias": 0.6,
+                                "influence_weight": 0.5
+                            },
+                            {
+                                "agent_id": 5,
+                                "entity_name": "Siti Rahma",
+                                "entity_type": "InvestorGroup",
+                                "stance": "positive",
+                                "active_hours": [9, 10, 13, 14, 16, 19, 20],
+                                "posts_per_hour": 0.2,
+                                "comments_per_hour": 1.0,
+                                "response_delay_min": 10,
+                                "response_delay_max": 30,
+                                "activity_level": 0.4,
+                                "sentiment_bias": 0.3,
+                                "influence_weight": 0.3
+                            },
+                            {
+                                "agent_id": 6,
+                                "entity_name": "Aditya Wijaya",
+                                "entity_type": "InvestorGroup",
+                                "stance": "negative",
+                                "active_hours": [10, 11, 12, 14, 15, 17, 20, 21, 22, 23],
+                                "posts_per_hour": 0.6,
+                                "comments_per_hour": 2.5,
+                                "response_delay_min": 1,
+                                "response_delay_max": 8,
+                                "activity_level": 0.85,
+                                "sentiment_bias": -0.4,
+                                "influence_weight": 0.4
+                            }
+                        ],
+                        "event_config": {
+                            "narrative_direction": "Rencana kenaikan suku bunga Bank Indonesia memicu perdebatan antara investor ritel yang khawatir IHSG koreksi dan mereka yang melirik obligasi sebagai aset aman.",
+                            "hot_topics": [
+                                "BIRate",
+                                "Rupiah",
+                                "IHSG",
+                                "ObligasiSBN",
+                                "KebijakanBI"
+                            ],
+                            "initial_posts": [
+                                {
+                                    "poster_type": "Institution",
+                                    "poster_agent_id": 0,
+                                    "content": "Kami mengkaji kenaikan BI-Rate sebesar 25 bps guna memperkuat stabilitas nilai tukar Rupiah terhadap gejolak eksternal."
+                                },
+                                {
+                                    "poster_type": "InvestorGroup",
+                                    "poster_agent_id": 1,
+                                    "content": "Waduh, BI-Rate naik lagi! Siap-siap IHSG merah besok, portofolio reksa dana saham saya makin amblas..."
+                                },
+                                {
+                                    "poster_type": "InvestorGroup",
+                                    "poster_agent_id": 5,
+                                    "content": "Bunga obligasi negara (SBN) pasti naik juga nih. Mending amanin dana ke obligasi dulu daripada sangkut di saham."
+                                }
+                            ]
+                        },
+                        "twitter_config": {
+                            "recency_weight": 0.4,
+                            "popularity_weight": 0.3,
+                            "relevance_weight": 0.3,
+                            "viral_threshold": 10,
+                            "echo_chamber_strength": 0.5
+                        },
+                        "reddit_config": {
+                            "recency_weight": 0.3,
+                            "popularity_weight": 0.4,
+                            "relevance_weight": 0.3,
+                            "viral_threshold": 15,
+                            "echo_chamber_strength": 0.6
+                        },
+                        "llm_model": "qwen-plus",
+                        "llm_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                        "generated_at": datetime.now().isoformat(),
+                        "generation_reasoning": "Configurasi waktu didasarkan pada siklus berita pasar 24 jam dengan peak hours saat jam bursa BEI | Konfigurasi agent mencerminkan profil risiko dari konservatif hingga agresif untuk mensimulasikan dinamika pasar."
+                    }
+                    
+                    with open(os.path.join(sim_dir, "simulation_config.json"), 'w', encoding='utf-8') as f:
+                        json.dump(config_data, f, ensure_ascii=False, indent=2)
+                        
+                    task_manager.update_task(
+                        task_id,
+                        progress=85,
+                        message="[3/4] Berhasil menghasilkan konfigurasi simulasi"
+                    )
+                    
+                    time.sleep(0.5)
+                    task_manager.update_task(
+                        task_id,
+                        progress=95,
+                        message="[4/4] Mempersiapkan berkas skrip simulasi..."
+                    )
+                    time.sleep(0.5)
+                    
+                    # Update simulation state to READY
+                    state.status = SimulationStatus.READY
+                    state.config_generated = True
+                    state.profiles_count = 7
+                    state.entities_count = 7
+                    state.entity_types = ["Institution", "Indicator", "Currency", "MarketIndex", "AssetClass", "InvestorGroup"]
+                    state.updated_at = datetime.now().isoformat()
+                    
+                    # Save state.json inside simulation dir
+                    state_file_path = os.path.join(sim_dir, "state.json")
+                    with open(state_file_path, 'w', encoding='utf-8') as f:
+                        json.dump(state.to_dict(), f, ensure_ascii=False, indent=2)
+                    
+                    manager._save_simulation_state(state)
+                    
+                    task_manager.complete_task(
+                        task_id,
+                        result=state.to_simple_dict()
+                    )
+                    logger.info(f"Demo simulation prepare completed: {simulation_id}")
+                except Exception as ex:
+                    logger.error(f"Demo simulation prepare failed: {ex}")
+                    task_manager.fail_task(task_id, str(ex))
+            
+            thread = threading.Thread(target=run_demo_prepare, daemon=True)
+            thread.start()
+            
+            return jsonify({
+                "success": True,
+                "data": {
+                    "simulation_id": simulation_id,
+                    "task_id": task_id,
+                    "status": "preparing",
+                    "message": t('api.prepareStarted'),
+                    "already_prepared": False,
+                    "expected_entities_count": state.entities_count,
+                    "entity_types": state.entity_types
+                }
+            })
 
         # 定义后台任务
         def run_prepare():
@@ -1601,6 +1980,216 @@ def start_simulation():
             logger.info(f"启用图谱记忆更新: simulation_id={simulation_id}, graph_id={graph_id}")
         
         # 启动模拟
+        from ..services.demo_visualization import DEMO_GRAPH_ID
+        is_demo = (state.graph_id == DEMO_GRAPH_ID)
+        
+        if is_demo:
+            import threading
+            import time
+            import json
+            from datetime import datetime, timedelta
+            
+            # Setup directories and files
+            sim_dir = os.path.join(Config.OASIS_SIMULATION_DATA_DIR, simulation_id)
+            os.makedirs(os.path.join(sim_dir, "twitter"), exist_ok=True)
+            os.makedirs(os.path.join(sim_dir, "reddit"), exist_ok=True)
+            
+            # Reset logs
+            for filepath in [
+                os.path.join(sim_dir, "twitter", "actions.jsonl"),
+                os.path.join(sim_dir, "reddit", "actions.jsonl"),
+                os.path.join(sim_dir, "simulation.log")
+            ]:
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    pass
+            
+            tot_rounds = max_rounds or 40
+            
+            run_state_dict = {
+                "simulation_id": simulation_id,
+                "runner_status": "running",
+                "current_round": 0,
+                "total_rounds": tot_rounds,
+                "simulated_hours": 0,
+                "total_simulation_hours": 24,
+                "twitter_current_round": 0,
+                "reddit_current_round": 0,
+                "twitter_simulated_hours": 0,
+                "reddit_simulated_hours": 0,
+                "twitter_running": True,
+                "reddit_running": True,
+                "twitter_completed": False,
+                "reddit_completed": False,
+                "twitter_actions_count": 0,
+                "reddit_actions_count": 0,
+                "rounds": [],
+                "recent_actions": [],
+                "started_at": datetime.now().isoformat(),
+                "updated_at": datetime.now().isoformat()
+            }
+            
+            state_file_path = os.path.join(sim_dir, "run_state.json")
+            with open(state_file_path, 'w', encoding='utf-8') as f:
+                json.dump(run_state_dict, f, ensure_ascii=False, indent=2)
+            
+            # Define mock actions pool
+            actions_pool = [
+                {"platform": "twitter", "agent_id": 1, "agent_name": "Budi Santoso", "action_type": "CREATE_POST", "content": "Kenaikan suku bunga BI 25 bps kayaknya bakal bikin IHSG tertekan nih. Saham perbankan aman gak ya?"},
+                {"platform": "reddit", "agent_id": 5, "agent_name": "Siti Rahma", "action_type": "CREATE_POST", "content": "Daripada pusing saham turun, mending buyback ORI atau SBN. Kuponnya pasti naik ngikutin BI-Rate."},
+                {"platform": "twitter", "agent_id": 0, "agent_name": "Bank Indonesia", "action_type": "CREATE_POST", "content": "Kenaikan BI-Rate sebesar 25 bps bertujuan untuk memperkuat stabilitas nilai tukar Rupiah dari ketidakpastian global."},
+                {"platform": "twitter", "agent_id": 6, "agent_name": "Aditya Wijaya", "action_type": "CREATE_POST", "content": "Suku bunga naik terus, inflasi juga tinggi. Mending taruh di Crypto aja lah, aset digital lebih anti-inflasi."},
+                {"platform": "reddit", "agent_id": 1, "agent_name": "Budi Santoso", "action_type": "CREATE_COMMENT", "content": "Setuju dengan sbn_hunter, obligasi negara lebih aman buat kondisi market sekarang.", "post_id": 1},
+                {"platform": "twitter", "agent_id": 4, "agent_name": "Fixed Income Fanatic", "action_type": "CREATE_POST", "content": "Kupon SBN ritel seri berikutnya diproyeksikan naik imbas BI-Rate 6.25%. Saatnya menumpuk fixed income!"},
+                {"platform": "reddit", "agent_id": 5, "agent_name": "Siti Rahma", "action_type": "CREATE_COMMENT", "content": "SBN ritel memang pilihan logis untuk pasif income saat ini bagi keluarga.", "post_id": 1},
+                {"platform": "twitter", "agent_id": 2, "agent_name": "Rupiah Tracker", "action_type": "CREATE_POST", "content": "Rupiah menguat ke Rp 16.100 per USD sesaat setelah BI mengumumkan kenaikan BI-Rate. Dampak positif terbukti."},
+                {"platform": "twitter", "agent_id": 3, "agent_name": "IHSG Daily", "action_type": "CREATE_POST", "content": "IHSG ditutup melemah 0.8% hari ini. Sektor properti dan otomotif paling tertekan akibat kekhawatiran bunga kredit naik."},
+                {"platform": "twitter", "agent_id": 1, "agent_name": "Budi Santoso", "action_type": "LIKE_POST", "post_author_name": "IHSG Daily", "post_content": "IHSG ditutup melemah 0.8% hari ini..."},
+                {"platform": "reddit", "agent_id": 6, "agent_name": "Aditya Wijaya", "action_type": "CREATE_POST", "content": "Sistem fiat emang rapuh, dikit-dikit naik suku bunga. Bitcoin and crypto are the only way out."},
+                {"platform": "reddit", "agent_id": 4, "agent_name": "Fixed Income Fanatic", "action_type": "CREATE_COMMENT", "content": "Crypto terlalu volatil buat dana jangka pendek, mending SBR atau ORI yang dijamin UU.", "post_id": 2},
+                {"platform": "twitter", "agent_id": 0, "agent_name": "Bank Indonesia", "action_type": "CREATE_POST", "content": "Kami berkomitmen menjaga inflasi tetap sasaran 2.5% plus-minus 1% melalui bauran kebijakan moneter yang pro-stability."},
+                {"platform": "twitter", "agent_id": 3, "agent_name": "IHSG Daily", "action_type": "CREATE_POST", "content": "Investor asing catat net sell Rp 500 miliar hari ini di BEI. Terjadi capital outflow sementara ke pasar obligasi."},
+                {"platform": "twitter", "agent_id": 1, "agent_name": "Budi Santoso", "action_type": "REPOST", "original_author_name": "IHSG Daily", "original_content": "Investor asing catat net sell Rp 500 miliar hari ini..."},
+                {"platform": "reddit", "agent_id": 1, "agent_name": "Budi Santoso", "action_type": "CREATE_COMMENT", "content": "Saya terpaksa cut loss beberapa saham defensif. Mau pindah ke Reksa Dana Pendapatan Tetap dulu."},
+                {"platform": "twitter", "agent_id": 2, "agent_name": "Rupiah Tracker", "action_type": "CREATE_POST", "content": "Cadangan devisa Indonesia tercatat stabil di kisaran USD 140 miliar, cukup kuat menopang stabilisasi Rupiah."},
+                {"platform": "twitter", "agent_id": 6, "agent_name": "Aditya Wijaya", "action_type": "CREATE_POST", "content": "Mulai mencicil BTC lagi di harga diskon saat market tradisional panik suku bunga."},
+                {"platform": "reddit", "agent_id": 5, "agent_name": "Siti Rahma", "action_type": "CREATE_COMMENT", "content": "Alhamdulillah kemarin dapat jatah kupon bulanan, lumayan buat nambah belanja dapur.", "post_id": 1},
+                {"platform": "twitter", "agent_id": 4, "agent_name": "Fixed Income Fanatic", "action_type": "CREATE_POST", "content": "Rasio utang pemerintah masih di batas aman. Investasi di SBN adalah wujud kontribusi ritel untuk pembangunan negara."},
+                {"platform": "twitter", "agent_id": 1, "agent_name": "Budi Santoso", "action_type": "CREATE_POST", "content": "Apakah suku bunga kredit pemilikan rumah (KPR) bakal langsung naik bulan depan?"},
+                {"platform": "reddit", "agent_id": 3, "agent_name": "IHSG Daily", "action_type": "CREATE_POST", "content": "Bagi dividen emiten perbankan besar masih menarik, koreksi harga bisa dimanfaatkan untuk akumulasi."},
+                {"platform": "twitter", "agent_id": 0, "agent_name": "Bank Indonesia", "action_type": "CREATE_POST", "content": "Rapat Dewan Gubernur (RDG) BI menilai ketidakpastian pasar keuangan global masih tinggi, stabilitas rupiah prioritas utama."},
+                {"platform": "twitter", "agent_id": 2, "agent_name": "Rupiah Tracker", "action_type": "CREATE_POST", "content": "Tekanan terhadap rupiah mereda hari ini, IDR menguat tipis ke Rp 16.085 per USD."},
+                {"platform": "reddit", "agent_id": 1, "agent_name": "Budi Santoso", "action_type": "UPVOTE_POST", "post_content": "Bagi dividen emiten perbankan besar masih menarik..."},
+                {"platform": "twitter", "agent_id": 6, "agent_name": "Aditya Wijaya", "action_type": "CREATE_POST", "content": "Inflasi global juga lagi kacau, dampaknya kerasa sampai ke Indonesia. Fiat currency is melting."}
+            ]
+            
+            def run_demo_simulation_thread():
+                action_idx = 0
+                for r in range(1, tot_rounds + 1):
+                    # Check if stopped
+                    try:
+                        with open(state_file_path, 'r', encoding='utf-8') as sf:
+                            current_state = json.load(sf)
+                        if current_state.get("runner_status") in ["stopped", "completed", "failed"]:
+                            logger.info(f"Demo simulation loop stopped: {simulation_id}")
+                            break
+                    except Exception:
+                        pass
+                    
+                    sim_hour = int((r * 24) / tot_rounds)
+                    run_state_dict["current_round"] = r
+                    run_state_dict["simulated_hours"] = sim_hour
+                    run_state_dict["twitter_current_round"] = r
+                    run_state_dict["reddit_current_round"] = r
+                    run_state_dict["twitter_simulated_hours"] = sim_hour
+                    run_state_dict["reddit_simulated_hours"] = sim_hour
+                    
+                    # Generate actions
+                    actions_count_in_round = 1 if r % 2 == 0 else 2
+                    
+                    for _ in range(actions_count_in_round):
+                        action_tmpl = actions_pool[action_idx % len(actions_pool)]
+                        action_idx += 1
+                        
+                        action_timestamp = (datetime.now() - timedelta(seconds=(tot_rounds - r))).isoformat()
+                        
+                        action_args = {}
+                        if "content" in action_tmpl:
+                            action_args["content"] = action_tmpl["content"]
+                        if "post_id" in action_tmpl:
+                            action_args["post_id"] = action_tmpl["post_id"]
+                        if "post_author_name" in action_tmpl:
+                            action_args["post_author_name"] = action_tmpl["post_author_name"]
+                        if "post_content" in action_tmpl:
+                            action_args["post_content"] = action_tmpl["post_content"]
+                        if "original_author_name" in action_tmpl:
+                            action_args["original_author_name"] = action_tmpl["original_author_name"]
+                        if "original_content" in action_tmpl:
+                            action_args["original_content"] = action_tmpl["original_content"]
+                        
+                        action_record = {
+                            "round_num": r,
+                            "timestamp": action_timestamp,
+                            "platform": action_tmpl["platform"],
+                            "agent_id": action_tmpl["agent_id"],
+                            "agent_name": action_tmpl["agent_name"],
+                            "action_type": action_tmpl["action_type"],
+                            "action_args": action_args,
+                            "result": None,
+                            "success": True
+                        }
+                        
+                        # Write to file
+                        platform_file = os.path.join(sim_dir, action_tmpl["platform"], "actions.jsonl")
+                        with open(platform_file, 'a', encoding='utf-8') as af:
+                            af.write(json.dumps(action_record, ensure_ascii=False) + "\n")
+                        
+                        # Write log
+                        log_msg = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [{action_tmpl['platform'].upper()}] Agent {action_record['agent_name']} performed {action_record['action_type']}: {action_args.get('content') or action_args.get('post_content') or ''}\n"
+                        with open(os.path.join(sim_dir, "simulation.log"), 'a', encoding='utf-8') as lf:
+                            lf.write(log_msg)
+                        
+                        # Update run state list
+                        run_state_dict["recent_actions"].insert(0, action_record)
+                        if len(run_state_dict["recent_actions"]) > 50:
+                            run_state_dict["recent_actions"] = run_state_dict["recent_actions"][:50]
+                        
+                        if action_tmpl["platform"] == "twitter":
+                            run_state_dict["twitter_actions_count"] += 1
+                        else:
+                            run_state_dict["reddit_actions_count"] += 1
+                    
+                    run_state_dict["updated_at"] = datetime.now().isoformat()
+                    with open(state_file_path, 'w', encoding='utf-8') as f:
+                        json.dump(run_state_dict, f, ensure_ascii=False, indent=2)
+                    
+                    time.sleep(1.0)
+                
+                # Done
+                try:
+                    with open(state_file_path, 'r', encoding='utf-8') as sf:
+                        current_state = json.load(sf)
+                    if current_state.get("runner_status") == "running":
+                        run_state_dict["runner_status"] = "completed"
+                        run_state_dict["twitter_completed"] = True
+                        run_state_dict["reddit_completed"] = True
+                        run_state_dict["twitter_running"] = False
+                        run_state_dict["reddit_running"] = False
+                        run_state_dict["completed_at"] = datetime.now().isoformat()
+                        run_state_dict["updated_at"] = datetime.now().isoformat()
+                        
+                        with open(state_file_path, 'w', encoding='utf-8') as f:
+                            json.dump(run_state_dict, f, ensure_ascii=False, indent=2)
+                        
+                        # Update simulation_state
+                        state_obj = manager.get_simulation(simulation_id)
+                        if state_obj:
+                            state_obj.status = SimulationStatus.COMPLETED
+                            manager._save_simulation_state(state_obj)
+                            
+                        # Also write a final log
+                        with open(os.path.join(sim_dir, "simulation.log"), 'a', encoding='utf-8') as lf:
+                            lf.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [SYSTEM] Simulation completed successfully.\n")
+                except Exception as ex:
+                    logger.error(f"Error completing demo simulation thread: {ex}")
+            
+            # Update state status to RUNNING
+            state.status = SimulationStatus.RUNNING
+            manager._save_simulation_state(state)
+            
+            # Start thread
+            thread = threading.Thread(target=run_demo_simulation_thread, daemon=True)
+            thread.start()
+            
+            # Prepare response data
+            response_data = run_state_dict.copy()
+            response_data["progress_percent"] = 0.0
+            response_data["total_actions_count"] = 0
+            
+            return jsonify({
+                "success": True,
+                "data": response_data
+            })
+            
         run_state = SimulationRunner.start_simulation(
             simulation_id=simulation_id,
             platform=platform,
@@ -1671,6 +2260,39 @@ def stop_simulation():
                 "error": t('api.requireSimulationId')
             }), 400
         
+        manager = SimulationManager()
+        state = manager.get_simulation(simulation_id)
+        from ..services.demo_visualization import DEMO_GRAPH_ID
+        is_demo = state and (state.graph_id == DEMO_GRAPH_ID)
+        
+        if is_demo:
+            from datetime import datetime
+            sim_dir = os.path.join(Config.OASIS_SIMULATION_DATA_DIR, simulation_id)
+            state_file_path = os.path.join(sim_dir, "run_state.json")
+            
+            run_state_dict = {}
+            if os.path.exists(state_file_path):
+                with open(state_file_path, 'r', encoding='utf-8') as sf:
+                    run_state_dict = json.load(sf)
+            
+            run_state_dict["runner_status"] = "stopped"
+            run_state_dict["twitter_running"] = False
+            run_state_dict["reddit_running"] = False
+            run_state_dict["completed_at"] = datetime.now().isoformat()
+            run_state_dict["updated_at"] = datetime.now().isoformat()
+            
+            with open(state_file_path, 'w', encoding='utf-8') as f:
+                json.dump(run_state_dict, f, ensure_ascii=False, indent=2)
+                
+            if state:
+                state.status = SimulationStatus.PAUSED
+                manager._save_simulation_state(state)
+                
+            return jsonify({
+                "success": True,
+                "data": run_state_dict
+            })
+            
         run_state = SimulationRunner.stop_simulation(simulation_id)
         
         # 更新模拟状态
