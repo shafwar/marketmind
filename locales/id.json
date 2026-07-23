@@ -121,7 +121,30 @@
     "initializing": "Menginisialisasi...",
     "demoVizBtn": "Pratinjau tanpa AI",
     "demoVizHint": "Membuka analisis contoh dengan peta konteks statis — tanpa panggilan model.",
-    "demoVizLoading": "Membuka contoh…"
+    "demoVizLoading": "Membuka contoh…",
+    "problemEyebrow": "MASALAHNYA",
+    "problem1": "Hari ini setiap kebijakan diuji oleh pasar setelah dirilis — saat sudah terlambat diubah.",
+    "problem2": "Riset survei tradisional mahal (Rp500jt+) dan lambat (3–6 bulan).",
+    "problem3": "Tidak ada yang memodelkan reaksi kolektif investor ritel: herding, FOMO, panic selling.",
+    "outputEyebrow": "YANG ANDA DAPAT",
+    "outputTitle": "Satu rekomendasi definitif — bukan data mentah.",
+    "outputVerdict": "LANJUTKAN DENGAN HATI-HATI",
+    "outputConfidence": "Keyakinan 71%",
+    "outputRisksTitle": "Risiko utama",
+    "outputRisk1": "Adopsi awal terkonsentrasi di segmen muda urban.",
+    "outputRisk2": "Sensitif terhadap pembalikan sentimen suku bunga.",
+    "outputActionsTitle": "Langkah aksi",
+    "outputAction1": "Fokuskan edukasi pada segmen literasi rendah.",
+    "outputAction2": "Siapkan komunikasi mitigasi panik lebih awal.",
+    "outputDisclaimer": "Estimasi directional terkalibrasi — bukan ramalan.",
+    "whyEyebrow": "KENAPA MARKETMIND",
+    "pillar1Title": "Terkalibrasi data resmi",
+    "pillar1Desc": "Komposisi populasi ke KSEI April 2026, literasi ke SNLIK OJK.",
+    "pillar2Title": "Muncul sendiri, bukan skrip",
+    "pillar2Desc": "FOMO dan panic selling lahir dari interaksi — tak ada yang menyuruh.",
+    "pillar3Title": "Jujur secara desain",
+    "pillar3Desc": "Estimasi directional dengan batas yang dinyatakan, bukan oracle.",
+    "institutionsLabel": "Dirancang untuk"
   },
   "main": {
     "layoutGraph": "Graf",
@@ -144,6 +167,7 @@
       "Intelijen keputusan",
       "Dossier keputusan"
     ],
+    "exportDossier": "Ekspor Dossier",
     "demoVizBanner": "Mode contoh: hanya peta konteks statis lokal (tanpa panggilan model AI).",
     "demoVizSourceLabel": "Narasi sumber data Anda",
     "demoVizScenarioLabel": "Deskripsi skenario Anda"
@@ -285,7 +309,10 @@
     "timelineTotalEvents": "Total peristiwa",
     "roundLabel": "Putaran",
     "timeLabel": "Waktu",
-    "actsLabel": "Aksi"
+    "actsLabel": "Aksi",
+    "signatureLine": "Tidak ada satu baris kode pun yang menyuruh mereka panik — FOMO dan panic selling muncul dengan sendirinya.",
+    "debateTitle": "Debat Publik Investor",
+    "debateSubtitle": "Investor sintetis bereaksi dan berdebat terhadap kebijakan Anda secara langsung — setiap kartu adalah keputusan satu investor."
   },
   "step4": {
     "generatingSection": "Menghasilkan {title}...",

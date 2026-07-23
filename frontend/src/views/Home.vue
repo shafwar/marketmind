@@ -53,6 +53,76 @@
         </div>
       </section>
 
+      <!-- Narrative band: problem → output preview → why → institutions -->
+      <section class="narrative-band">
+        <div class="problem-strip">
+          <span class="band-eyebrow">{{ $t('home.problemEyebrow') }}</span>
+          <ul class="problem-list">
+            <li>{{ $t('home.problem1') }}</li>
+            <li>{{ $t('home.problem2') }}</li>
+            <li>{{ $t('home.problem3') }}</li>
+          </ul>
+        </div>
+
+        <div class="narrative-grid">
+          <!-- Output preview: show the destination -->
+          <div class="output-preview mm-card">
+            <span class="band-eyebrow accent">{{ $t('home.outputEyebrow') }}</span>
+            <div class="op-title">{{ $t('home.outputTitle') }}</div>
+            <div class="op-verdict-row">
+              <span class="op-verdict mm-verdict--caution">{{ $t('home.outputVerdict') }}</span>
+              <span class="op-confidence">{{ $t('home.outputConfidence') }}</span>
+            </div>
+            <div class="op-columns">
+              <div class="op-block">
+                <h4>{{ $t('home.outputRisksTitle') }}</h4>
+                <ul>
+                  <li>{{ $t('home.outputRisk1') }}</li>
+                  <li>{{ $t('home.outputRisk2') }}</li>
+                </ul>
+              </div>
+              <div class="op-block">
+                <h4>{{ $t('home.outputActionsTitle') }}</h4>
+                <ul>
+                  <li>{{ $t('home.outputAction1') }}</li>
+                  <li>{{ $t('home.outputAction2') }}</li>
+                </ul>
+              </div>
+            </div>
+            <p class="op-disclaimer">{{ $t('home.outputDisclaimer') }}</p>
+          </div>
+
+          <!-- Why MarketMind: three pillars -->
+          <div class="pillars">
+            <span class="band-eyebrow">{{ $t('home.whyEyebrow') }}</span>
+            <div class="pillar">
+              <div class="pillar-title">{{ $t('home.pillar1Title') }}</div>
+              <div class="pillar-desc">{{ $t('home.pillar1Desc') }}</div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-title">{{ $t('home.pillar2Title') }}</div>
+              <div class="pillar-desc">{{ $t('home.pillar2Desc') }}</div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-title">{{ $t('home.pillar3Title') }}</div>
+              <div class="pillar-desc">{{ $t('home.pillar3Desc') }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Designed for -->
+        <div class="institutions">
+          <span class="inst-label">{{ $t('home.institutionsLabel') }}</span>
+          <div class="inst-names">
+            <span>Bank Indonesia</span>
+            <span>OJK</span>
+            <span>KSEI</span>
+            <span>Kementerian Keuangan</span>
+            <span>IDX</span>
+          </div>
+        </div>
+      </section>
+
       <!-- 下半部分：双栏布局 -->
       <section class="dashboard-section">
         <!-- 左栏：状态与步骤 -->
@@ -1013,6 +1083,201 @@ const startDemoVisualization = async () => {
   font-size: 0.8rem;
   color: var(--mm-error);
   font-family: var(--font-mono);
+}
+
+/* Narrative band */
+.narrative-band {
+  border-top: 1px solid var(--mm-border);
+  padding-top: 60px;
+  margin-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.band-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--mm-text-muted);
+}
+
+.band-eyebrow.accent {
+  color: var(--mm-accent);
+}
+
+.problem-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.problem-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.problem-list li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--mm-text-secondary);
+}
+
+.problem-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  background: var(--mm-accent);
+}
+
+.narrative-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.output-preview {
+  padding: 28px 32px;
+}
+
+.op-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 12px 0 20px;
+  color: var(--mm-text-primary);
+}
+
+.op-verdict-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.op-verdict {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+}
+
+.op-confidence {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--mm-text-secondary);
+}
+
+.op-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.op-block h4 {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mm-text-muted);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.op-block ul {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.op-block li {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--mm-text-secondary);
+}
+
+.op-disclaimer {
+  border-top: 1px solid var(--mm-border);
+  padding-top: 14px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mm-text-muted);
+}
+
+.pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pillar {
+  border-left: 2px solid var(--mm-accent);
+  padding-left: 16px;
+}
+
+.pillar-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin-bottom: 4px;
+  color: var(--mm-text-primary);
+}
+
+.pillar-desc {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--mm-text-secondary);
+}
+
+.institutions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--mm-border);
+  padding-top: 28px;
+}
+
+.inst-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--mm-text-muted);
+  text-transform: uppercase;
+}
+
+.inst-names {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.inst-names span {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--mm-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 1024px) {
+  .problem-list,
+  .narrative-grid,
+  .op-columns {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* 引导动画：微妙的边框脉冲 */

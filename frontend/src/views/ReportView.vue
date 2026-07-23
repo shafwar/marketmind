@@ -25,6 +25,8 @@
         <div class="step-divider"></div>
         <JourneyProgress :current="4" />
         <div class="step-divider"></div>
+        <button class="export-btn" @click="exportDossier">{{ $t('main.exportDossier') }}</button>
+        <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
           <span class="dot"></span>
           {{ statusText }}
@@ -140,6 +142,13 @@ const toggleMaximize = (target) => {
   } else {
     viewMode.value = target
   }
+}
+
+// Export the report as a board-ready PDF via the browser print dialog.
+// Force workbench (report full-width, graph hidden) so the printed dossier is document-only.
+const exportDossier = () => {
+  viewMode.value = 'workbench'
+  requestAnimationFrame(() => window.print())
 }
 
 // --- Data Logic ---
@@ -350,5 +359,47 @@ onMounted(() => {
 
 .panel-wrapper.left {
   border-right: 1px solid #EAEAEA;
+}
+
+.export-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 7px 14px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.export-btn:hover {
+  opacity: 0.85;
+}
+
+/* Board-ready print: strip chrome, print the report document only */
+@media print {
+  .app-header,
+  .meaning-rail,
+  .panel-wrapper.left {
+    display: none !important;
+  }
+  .main-view {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .content-area {
+    display: block !important;
+    overflow: visible !important;
+  }
+  .panel-wrapper.right {
+    width: 100% !important;
+    opacity: 1 !important;
+    transform: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
 }
 </style>

@@ -121,7 +121,30 @@
     "initializing": "Initializing...",
     "demoVizBtn": "Preview without AI",
     "demoVizHint": "Opens a sample analysis with a static context map — no model calls.",
-    "demoVizLoading": "Opening sample…"
+    "demoVizLoading": "Opening sample…",
+    "problemEyebrow": "THE PROBLEM",
+    "problem1": "Today every policy is tested by the market after release — when it is too late to change.",
+    "problem2": "Traditional survey research is expensive (Rp500M+) and slow (3–6 months).",
+    "problem3": "Nothing models retail investors' collective reaction: herding, FOMO, panic selling.",
+    "outputEyebrow": "WHAT YOU GET",
+    "outputTitle": "One definitive recommendation — not raw data.",
+    "outputVerdict": "PROCEED WITH CAUTION",
+    "outputConfidence": "71% confidence",
+    "outputRisksTitle": "Top risks",
+    "outputRisk1": "Early adoption concentrated in the young urban segment.",
+    "outputRisk2": "Sensitive to a reversal in rate sentiment.",
+    "outputActionsTitle": "Action steps",
+    "outputAction1": "Focus education on low-literacy segments.",
+    "outputAction2": "Prepare panic-mitigation messaging early.",
+    "outputDisclaimer": "A calibrated directional estimate — not a forecast.",
+    "whyEyebrow": "WHY MARKETMIND",
+    "pillar1Title": "Calibrated to official data",
+    "pillar1Desc": "Population composition to KSEI Apr 2026, literacy to OJK SNLIK.",
+    "pillar2Title": "Emergent, not scripted",
+    "pillar2Desc": "FOMO and panic selling arise from interaction — no one is told to.",
+    "pillar3Title": "Honest by design",
+    "pillar3Desc": "A directional estimate with stated limits, not an oracle.",
+    "institutionsLabel": "Designed for"
   },
   "main": {
     "layoutGraph": "Graph",
@@ -138,6 +161,7 @@
     "statusReportGen": "Generating report",
     "statusProcessing": "Processing",
     "stepNames": ["Market context", "Population prep", "Market simulation", "Decision intelligence", "Decision dossier"],
+    "exportDossier": "Export Dossier",
     "demoVizBanner": "Demo visualization: static graph data only (no LLM / no Zep)."
   },
   "step1": {
@@ -277,7 +301,10 @@
     "timelineTotalEvents": "Total events",
     "roundLabel": "Round",
     "timeLabel": "Time",
-    "actsLabel": "Actions"
+    "actsLabel": "Actions",
+    "signatureLine": "Not one line of code tells them to panic — FOMO and panic selling emerge on their own.",
+    "debateTitle": "Public Investor Debate",
+    "debateSubtitle": "Synthetic investors react and debate your policy in real time — each card is one investor's decision."
   },
   "step4": {
     "generatingSection": "Generating {title}...",
