@@ -44,7 +44,7 @@
         <div class="hero-right">
           <!-- Logo 区域 -->
           <div class="logo-container">
-            <img src="../assets/logo/MiroFish_logo_left.jpeg" alt="MarketMind" class="hero-logo" />
+            <div class="hero-logo" role="img" aria-label="MarketMind">Market<span class="wordmark-accent">Mind</span></div>
           </div>
           
           <button class="scroll-down-btn" @click="scrollToBottom">
@@ -370,7 +370,7 @@ const startDemoVisualization = async () => {
 <style scoped>
 .home-container {
   --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  --font-sans: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   --font-cn: 'Noto Sans SC', system-ui, sans-serif;
   --orange: var(--mm-accent);
   min-height: 100vh;
@@ -563,8 +563,17 @@ const startDemoVisualization = async () => {
 }
 
 .hero-logo {
-  max-width: 500px; /* 调整logo大小 */
-  width: 100%;
+  font-family: var(--mm-font-ui, 'Hanken Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: clamp(48px, 6vw, 92px);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--mm-text-primary);
+  user-select: none;
+}
+
+.hero-logo .wordmark-accent {
+  color: var(--mm-accent);
 }
 
 .scroll-down-btn {
@@ -1029,7 +1038,7 @@ const startDemoVisualization = async () => {
   }
   
   .hero-logo {
-    max-width: 200px;
+    font-size: clamp(40px, 12vw, 64px);
     margin-bottom: 20px;
   }
 }
@@ -1039,7 +1048,7 @@ const startDemoVisualization = async () => {
 /* English locale adjustments (unscoped to target html[lang]) */
 html[lang="en"] .main-title {
   font-size: 3.5rem;
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   letter-spacing: -1px;
 }
 
@@ -1072,7 +1081,7 @@ html[lang="en"] .status-section .status-ready {
 }
 
 html[lang="en"] .status-section .metric-value {
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1.4rem;
 }
 

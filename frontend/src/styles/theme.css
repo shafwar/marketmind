@@ -4,6 +4,15 @@
 :root {
   color-scheme: dark;
 
+  /* Typography — Hanken Grotesk (UI/display), JetBrains Mono (data/labels). */
+  --mm-font-ui: 'Hanken Grotesk', system-ui, sans-serif;
+  --mm-font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+  /* Verdict semantics (map onto existing state colors) */
+  --mm-verdict-proceed: #4ade80;
+  --mm-verdict-caution: #fbbf24;
+  --mm-verdict-stop: #f87171;
+
   --mm-page-bg: #09090b;
   --mm-bg-surface: #101014;
   --mm-bg-elevated: #16161c;

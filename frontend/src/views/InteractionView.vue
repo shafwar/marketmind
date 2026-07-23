@@ -23,10 +23,7 @@
       <div class="header-right">
         <LanguageSwitcher />
         <div class="step-divider"></div>
-        <div class="workflow-step">
-          <span class="step-num">{{ $t('main.stepPrefix') }} 5/5</span>
-          <span class="step-name">{{ $tm('main.stepNames')[4] }}</span>
-        </div>
+        <JourneyProgress :current="5" />
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
           <span class="dot"></span>
@@ -73,6 +70,7 @@ import { getProject, getGraphData } from '../api/graph'
 import { getSimulation } from '../api/simulation'
 import { getReport } from '../api/report'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import JourneyProgress from '../components/JourneyProgress.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -225,7 +223,7 @@ onMounted(() => {
   flex-direction: column;
   background: #FFF;
   overflow: hidden;
-  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
 }
 
 /* Header */

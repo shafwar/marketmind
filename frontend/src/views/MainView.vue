@@ -23,10 +23,7 @@
       <div class="header-right">
         <LanguageSwitcher />
         <div class="step-divider"></div>
-        <div class="workflow-step">
-          <span class="step-num">{{ $t('main.stepPrefix') }} {{ currentStep }}/5</span>
-          <span class="step-name">{{ $tm('main.stepNames')[currentStep - 1] }}</span>
-        </div>
+        <JourneyProgress :current="currentStep" />
         <div class="step-divider"></div>
         <span class="status-indicator" :class="statusClass">
           <span class="dot"></span>
@@ -34,6 +31,8 @@
         </span>
       </div>
     </header>
+
+    <MeaningRail :page="meaningPage" />
 
     <div v-if="projectData?.demo_visualization" class="demo-viz-banner">
       {{ $t('main.demoVizBanner') }}
@@ -89,6 +88,8 @@ import Step2EnvSetup from '../components/Step2EnvSetup.vue'
 import { generateOntology, getProject, buildGraph, getTaskStatus, getGraphData } from '../api/graph'
 import { getPendingUpload, clearPendingUpload, buildFilesForOntology, hasSeedSource } from '../store/pendingUpload'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import JourneyProgress from '../components/JourneyProgress.vue'
+import MeaningRail from '../components/MeaningRail.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -99,6 +100,8 @@ const viewMode = ref('split') // graph | split | workbench
 
 // Step State
 const currentStep = ref(1) // 1: 图谱构建, 2: 环境搭建, 3: 开始模拟, 4: 报告生成, 5: 深度互动
+// Meaning rail: step 1 = market context, step 2 = population prep
+const meaningPage = computed(() => (currentStep.value === 1 ? 'konteks' : 'persiapan'))
 const stepNames = computed(() => tm('main.stepNames'))
 
 // Data State
@@ -419,7 +422,7 @@ onUnmounted(() => {
   flex-direction: column;
   background: var(--mm-page-bg);
   overflow: hidden;
-  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   color: var(--mm-text-primary);
 }
 

@@ -834,7 +834,7 @@ onUnmounted(() => {
 .file-tag.other { background: #f3f4f6; color: #6b7280; }
 
 .file-name {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Hanken Grotesk', sans-serif;
   font-size: 0.7rem;
   color: #4b5563;
   white-space: nowrap;
@@ -885,7 +885,7 @@ onUnmounted(() => {
 
 /* 卡片标题 */
 .card-title {
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Hanken Grotesk', -apple-system, sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--mm-text-primary);
@@ -903,7 +903,7 @@ onUnmounted(() => {
 
 /* 卡片描述 */
 .card-desc {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Hanken Grotesk', sans-serif;
   font-size: 0.75rem;
   color: var(--mm-text-secondary);
   margin: 0 0 16px 0;
